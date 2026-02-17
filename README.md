@@ -20,13 +20,24 @@ the respective scripts in the repo.
 
 ================================
 
-Step 1.: Use eQTL catalogue to identify variants
+#Pipeline (run on node08):
 
-Each eQTL study in the catalog provides files on gene expression (ge) and also
-on isoform usage (tx). The data is stored in .tsv.gz files and we want to extract
-the following columns:
-- "variant" 	variant id
-- "gene_id"	id of the associated gene
-- "pvalue"	significance of the association
+### General pipeline
+```shell
+cd "/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
 
+./extract_cols.bsh <eQTL_file.tsv.gz> <output_destination.tsv.gz>
 
+python3 adjust_pv.py <extracted_cols.tsv.gz> <output_destination.tsv.gz> <alpha>
+
+```
+
+### Run example (Alasoo_2018 expression file)
+```shell
+cd "/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
+
+./extract_cols.bsh /home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz results/Alasoo_2018_ge_extracted.tsv.gz
+
+python3 adjust_pv.py results/Alasoo_2018_ge_extracted.tsv.gz results/Alasoo_2018_ge_adj.tsv.gz 0.05
+
+```
