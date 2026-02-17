@@ -28,8 +28,8 @@ fi
 header=$(zcat "$source_filename" | head -1 | tr '\t' '\n' | nl)
 col1=$(echo "$header" | grep 'variant' | cut -f1 | xargs)
 col2=$(echo "$header" | grep 'gene_id' | cut -f1 | xargs)
-col3=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
-col4=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
+col3=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
+col4=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
 
 # Check if all found
 if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" ]]; then
