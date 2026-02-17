@@ -10,27 +10,24 @@
 # load libraries
 import sys
 import gzip
+import math
 import pandas as pd
 import numpy as np
-
-
-# define functions
-def adjust_pv(pv, m):
-	p_adj = pv*m
-	return min(p_adj, 1.0)
+import time
+start_time = time.time()
 
 
 # store user input 
-filename = sys.argv[1]		# name of .gz zipped file
-pv_cutoff = sys.argv[2]		# user defined pv_cutoff
-
+filename = sys.argv[1]          # name of .gz zipped file
+destination = sys.argv[2]	# name of .gz zipped file for results
+pv_cutoff = sys.argv[3]         # user defined pv_cutoff
 
 # input handling
-if pv_cutoff == '' or filename == '':
+if pv_cutoff == '' or filename == '' or destination == '':
 	print("Error: missing input argument pvalue cutoff or file name!")
 	sys.exit(1)
-if not filename.endswith('.tsv.gz'):
-	print("Error: input file should be .tsv.gz format")
+if not filename.endswith('.tsv.gz') or not destination.endswith('.tsv.gz'):
+	print("Error: input file and destination should be in .tsv.gz format")
 	sys.exit(1)
 try: 
 	pv_cutoff = float(pv_cutoff)
@@ -39,13 +36,42 @@ except ValueError:
 	sys.exit(1)
 
 
-# get m
-m = 0
+# get m = number of lines
+print(f'\ncalculating adjusted cutoff...')
+m = -1				# subtract header line
 with gzip.open(filename, 'rt') as eQTL_file:
-	for line in eQTL_file:
-		m += 1
-print(f'\nworking with m = {m}...')
-print(f'adjusted significance level is alpha = {pv_cutoff/m}\n')
+        for line in eQTL_file:
+                m += 1
+print(f'\nworking with 	m = {m}...')
+print(f'        alpha_adj = {pv_cutoff/m}...')
 
 
-# load tsv
+# prepare pvalue adjustment, define necessary variables
+print(f'\nadjusting p-values...')
+total_chunks = math.ceil(m/(5*10**6))
+first_chunk = True
+chunk_num = 0
+sig_tot = 0
+
+
+# store adjusted pvalue and significance bool (1|0)
+for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['variant', 'gene_id', 'pvalue'], dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
+	p_adj = np.minimum(chunk['pvalue']*m, 1.0)
+	chunk['p_adj'] = p_adj
+	chunk['significant'] = (p_adj <= pv_cutoff).astype(int)
+	chunk.to_csv(destination, mode='a', header=first_chunk, compression='gzip', index=False)
+	first_chunk = False
+	chunk_num +=1
+
+	# get stats for continuous output while running
+	sig = chunk['significant'].sum()
+	non_sig = len(chunk)-sig
+	sig_tot += sig
+	print(f"Chunk {chunk_num}/{total_chunks}, sig: {sig}, non_sig: {non_sig}, sig_tot: {sig_tot}")
+
+
+# final message
+total_time = time.time() - start_time
+print(f'analysis finished after {total_time/60:.2f} minutes!') 
+print(f'confirm success using:')
+print(f'zcat {destination} | head -25')
