@@ -37,6 +37,11 @@ try:
 except ValueError:
 	print("Error: pv_cutoff input should be float, e.g. 0.05")
 	sys.exit(1)
+if pv_cutoff >= pv_cutoff_non_sig:
+	print(f"WARNING! You specified a significance cutoff larger than the non-significance cutoff:")
+	print(f"alpha = {pv_cutoff}")
+	print(f"non_sig_alpha = {pv_cutoff_non_sig}")
+	print(f"perhaps you got the inputs mixed up? To abort press ctrl+C")
 
 
 # get m = number of lines
