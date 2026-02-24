@@ -6,7 +6,7 @@
 #- gene_id
 #- pvalue
 #- molecular_trait_id
-#- median_tmp
+#- median_tm
 #and saves the column values in a user-defined output directory.
 
 
