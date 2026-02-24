@@ -24,7 +24,7 @@ pv_cutoff = sys.argv[3]         # user defined pv_cutoff
 pv_cutoff_non_sig = sys.argv[4]	# user defined pv_cutoff for non-significant
 
 # input handling
-if pv_cutoff == '' or non_sig_cutoff == '' or filename == '' or destination == '':
+if pv_cutoff == '' or pv_cutoff_non_sig == '' or filename == '' or destination == '':
 	print("Error: missing input argument!")
 	print("Usage:\npython3 adjust_pv.py <filename> <destination> <pv_cutoff> <pv_cutoff_non_sig>")
 	sys.exit(1)
