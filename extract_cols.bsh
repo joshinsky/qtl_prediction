@@ -6,7 +6,7 @@
 #- gene_id
 #- pvalue
 #- molecular_trait_id
-#- median_tm
+#- median_tpm
 #and saves the column values in a user-defined output directory.
 
 
@@ -31,7 +31,7 @@ col1=$(echo "$header" | grep 'variant' | cut -f1 | xargs)
 col2=$(echo "$header" | grep 'gene_id' | cut -f1 | xargs)
 col3=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
 col4=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
-col5=$(echo "$header" | grep 'median_tmp' | cut -f1 | xargs)
+col5=$(echo "$header" | grep 'median_tpm' | cut -f1 | xargs)
 
 # Check if all found
 if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" || -z "$col5" ]]; then
