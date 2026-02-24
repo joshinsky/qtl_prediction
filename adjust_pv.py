@@ -45,8 +45,8 @@ m = -1				# subtract header line
 with gzip.open(filename, 'rt') as eQTL_file:
         for line in eQTL_file:
                 m += 1
-print(f'\nworking with 	m = {m}...')
-print(f'        alpha_adj = {pv_cutoff/m}...')
+print(f'\nworking with 	m = {m}')
+print(f'        alpha_adj = {pv_cutoff/m}')
 print(f'    non_sig_alpha = {pv_cutoff_non_sig}')
 
 
@@ -92,4 +92,4 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 total_time = time.time() - start_time
 print(f'\nanalysis finished after {total_time/60:.2f} minutes!') 
 print(f'confirm success using:')
-print(f'zcat {destination} | head -25')
+print(f'zcat {destination} | head -25\n')
