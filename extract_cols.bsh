@@ -1,11 +1,12 @@
 #!/bin/bash
 
 
-#This script extracts the following columns from a .tsv.gz file for storing eQTL data:
+# This script extracts the following columns from a .tsv.gz file for storing eQTL data:
 #- variant
 #- gene_id
-#- molecular_trait_id
 #- pvalue
+#- molecular_trait_id
+#- median_tmp
 #and saves the column values in a user-defined output directory.
 
 
@@ -30,14 +31,15 @@ col1=$(echo "$header" | grep 'variant' | cut -f1 | xargs)
 col2=$(echo "$header" | grep 'gene_id' | cut -f1 | xargs)
 col3=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
 col4=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
+col5=$(echo "$header" | grep 'median_tmp' | cut -f1 | xargs)
 
 # Check if all found
-if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" ]]; then
-	echo "ERROR: Missing columns! Found: $col1,$col2,$col3,$col4"
+if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" || -z "$col5" ]]; then
+	echo "ERROR: Missing columns! Found: $col1,$col2,$col3,$col4,$col5"
 	exit 1
 fi
 
-echo "Extracting cols $col1,$col2,$col3,$col4 to $destination"
+echo "Extracting cols $col1,$col2,$col3,$col4,$col5 to $destination"
 
 # extract columns
-zcat "$source_filename" | cut -f"$col1,$col2,$col3,$col4" | gzip > "$destination"
+zcat "$source_filename" | cut -f"$col1,$col2,$col3,$col4,$col5" | gzip > "$destination"
