@@ -72,14 +72,17 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 	chunk['p_adj'] = p_adj
 	chunk['significant'] = (p_adj <= pv_cutoff).astype(int)
 	chunk['non_significant'] = (p_value >= pv_cutoff_non_sig).astype(int)
-	chunk.to_csv(destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
+	
+	mask = (chunk['significant'] == 1) | (chunk['non_significant'] == 1)
+	filtered_chunk = chunk[mask]
+	filtered_chunk.to_csv(destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
 	
 	first_chunk = False
 	chunk_num +=1
 
 	# get stats for continuous output while running
-	sig = chunk['significant'].sum()
-	non_sig = chunk['non_significant'].sum()
+	sig = filtered_chunk['significant'].sum()
+	non_sig = filtered_chunk['non_significant'].sum()
 	sig_tot += sig
 	non_sig_tot += non_sig
 	print(f"Chunk {chunk_num}/{total_chunks}, significant: {sig} (total: {sig_tot}), non-significant: {non_sig} (total: {non_sig_tot})")
