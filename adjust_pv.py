@@ -67,7 +67,7 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 	chunk['p_adj'] = p_adj
 	chunk['significant'] = (p_adj <= pv_cutoff).astype(int)
 	chunk['non_significant'] = (p_value >= pv_cutoff_non_sig).astype(int)
-	chunk.to_csv(destination, mode='a', header=first_chunk, compression='gzip', index=False)
+	chunk.to_csv(destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
 	
 	first_chunk = False
 	chunk_num +=1
@@ -82,6 +82,6 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 
 # final message
 total_time = time.time() - start_time
-print(f'analysis finished after {total_time/60:.2f} minutes!') 
+print(f'\nanalysis finished after {total_time/60:.2f} minutes!') 
 print(f'confirm success using:')
 print(f'zcat {destination} | head -25')
