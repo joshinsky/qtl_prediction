@@ -56,6 +56,7 @@ total_chunks = math.ceil(m/(5*10**6))
 first_chunk = True
 chunk_num = 0
 sig_tot = 0
+non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
 for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['variant', 'gene_id', 'pvalue'], dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
