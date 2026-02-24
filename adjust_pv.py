@@ -77,7 +77,7 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 	non_sig = chunk['non_significant'].sum()
 	sig_tot += sig
 	non_sig_tot += non_sig
-	print(f"Chunk {chunk_num}/{total_chunks}, \nsignificant: {sig}, total: {sig_tot} \nnon-significant: {non_sig}, total: {non_sig_tot}")
+	print(f"Chunk {chunk_num}/{total_chunks}, significant: {sig} (total: {sig_tot}), non-significant: {non_sig} (total: {non_sig_tot})")
 
 
 # final message
