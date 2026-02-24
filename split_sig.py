@@ -22,7 +22,7 @@ if not source_filename.endswith('.tsv.gz') or not sig_destination.endswith('.tsv
 	sys.exit(1)
 
 # split file on sig and non_sig in chunks for memory
-print(f"splitting {source_filename} on significance.")
+print(f"\nsplitting {source_filename} on significance.")
 chunk_size = 5*10**6
 first_chunk = True
 for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksize=chunk_size):
@@ -36,3 +36,10 @@ for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksiz
 	sig_chunk.to_csv(sig_destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
 	nsig_chunk.to_csv(nsig_destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
 	first_chunk = False
+
+
+# final message
+total_time = time.time() - start_time
+print(f'\nanalysis finished after {total_time/60:.2f} minutes!') 
+print(f'confirm success using:')
+print(f'zcat {sig_destination} | head -25\necho\nzcat {nsig_destination} | head -25\n')
