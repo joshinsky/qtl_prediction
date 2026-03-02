@@ -23,6 +23,6 @@ python3 adjust_pv.py temp/test_subset_cols.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
 # split on sig 
 python3 split_sig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
 
-zcat temp/test_sig.tsv.gz | cut -f5,6 | head -25
-echo
-zcat temp/test_nonsig.tsv.gz | cut -f5,6 | head -25
+# zcat temp/test_sig.tsv.gz | cut -f5,6 | head -25
+# echo
+# zcat temp/test_nonsig.tsv.gz | cut -f5,6 | head -25
