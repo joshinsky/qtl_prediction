@@ -7,4 +7,5 @@ import sys
 source_filename = sys.argv[1]
 
 df = pd.read_csv(source_filename, compression='gzip', sep='\t')
-print(df)
+print(df.columns)
+
