@@ -1,7 +1,6 @@
 #!/bin/bash
 
-mydir
-cd repo/qtl_prediction
+cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
 
 # subset to 5,000,000 rows (5%)
 zcat /home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz | head -2000001 | gzip > temp/test_subset.tsv.gz
