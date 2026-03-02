@@ -26,7 +26,7 @@ fi
 
 
 # find column indeces
-header=$(zcat "$source_filename" | head -1 | tr '\t' '\n' | nl)
+header=$(gunzip -c "$source_filename" | head -1 | tr '\t' '\n' | nl)
 col1=$(echo "$header" | grep 'variant' | cut -f1 | xargs)
 col2=$(echo "$header" | grep 'gene_id' | cut -f1 | xargs)
 col3=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
@@ -42,4 +42,4 @@ fi
 echo "Extracting cols $col1,$col2,$col3,$col4,$col5 to $destination"
 
 # extract columns
-zcat "$source_filename" | cut -f"$col1,$col2,$col3,$col4,$col5" | gzip > "$destination"
+gunzip -c "$source_filename" | cut -f"$col1,$col2,$col3,$col4,$col5" | gzip > "$destination"

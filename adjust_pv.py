@@ -75,9 +75,11 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 	
 	mask = (chunk['significant'] == 1) | (chunk['non_significant'] == 1)
 	filtered_chunk = chunk[mask]
-	filtered_chunk.to_csv(destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
-	
-	first_chunk = False
+	if first_chunk and not filtered_chunk.empty:
+		filtered_chunk.to_csv(destination, sep='\t', mode='w', header=True, compression='gzip', index=False)
+		first_chunk = False
+	else:
+		filtered_chunk.to_csv(destination, sep='\t', mode='a', header=False, compression='gzip', index=False)
 	chunk_num +=1
 
 	# get stats for continuous output while running

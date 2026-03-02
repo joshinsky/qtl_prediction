@@ -33,9 +33,15 @@ for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksiz
 	# split and store
 	sig_chunk = chunk[sig_mask]
 	nsig_chunk = chunk[nsig_mask]
-	sig_chunk.to_csv(sig_destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
-	nsig_chunk.to_csv(nsig_destination, sep='\t', mode='a', header=first_chunk, compression='gzip', index=False)
-	first_chunk = False
+	if first_chunk:
+		if not sig_chunk.empty:
+			sig_chunk.to_csv(sig_destination, sep='\t', mode='w', header=True, compression='gzip', index=False)
+		if not nsig_chunk.empty:
+			nsig_chunk.to_csv(nsig_destination, sep='\t', mode='w', header=True, compression='gzip', index=False)
+		first_chunk = False
+	else:
+		sig_chunk.to_csv(sig_destination, sep='\t', mode='a', header=True, compression='gzip', index=False)
+		nsig_chunk.to_csv(nsig_destination, sep='\t', mode='a', header=True, compression='gzip', index=False)
 
 
 # final message
