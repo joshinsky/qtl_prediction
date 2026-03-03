@@ -8,6 +8,8 @@ data/
 temp/
 results/
 
+# annoying files
+.DS_Store
 
 # C extensions
 *.so
