@@ -19,7 +19,7 @@ fi
 gunzip -c $raw_file | head -5000001 | gzip > temp/test_subset.tsv.gz
 
 # subset columns
-time bash '01getcols.sh' temp/test_subset.tsv.gz temp/test_subset_cols.tsv.gz
+bash '01getcols.sh' temp/test_subset.tsv.gz temp/test_subset_cols.tsv.gz
 
 # view results
 # gunzip -c temp/test_subset_cols.tsv.gz | head -15

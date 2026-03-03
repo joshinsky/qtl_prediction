@@ -46,6 +46,6 @@ for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksiz
 
 # final message
 total_time = time.time() - start_time
-print(f'\nanalysis finished after {total_time/60:.2f} minutes!') 
+print(f'\nFinished splitting after {total_time/60:.2f} minutes!') 
 print(f'confirm success using:')
-print(f'zcat {sig_destination} | head -25\necho\nzcat {nsig_destination} | head -25\n')
+print(f'gunzip -c {sig_destination} | head -25\ngunzip -c {nsig_destination} | head -25\n')

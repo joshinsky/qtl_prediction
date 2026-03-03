@@ -29,17 +29,19 @@ fi
 header=$(gunzip -c "$source_filename" | head -1 | tr '\t' '\n' | nl)
 col1=$(echo "$header" | grep 'variant' | cut -f1 | xargs)
 col2=$(echo "$header" | grep 'gene_id' | cut -f1 | xargs)
-col3=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
-col4=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
+col3=$(echo "$header" | grep 'molecular_trait_id' | cut -f1 | xargs)
+col4=$(echo "$header" | grep 'type' | cut -f1 | xargs)
 col5=$(echo "$header" | grep 'median_tpm' | cut -f1 | xargs)
+col6=$(echo "$header" | grep 'pvalue' | cut -f1 | xargs)
 
 # Check if all found
-if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" || -z "$col5" ]]; then
-	echo "ERROR: Missing columns! Found: $col1,$col2,$col3,$col4,$col5"
+if [[ -z "$col1" || -z "$col2" || -z "$col3" || -z "$col4" || -z "$col5" || -z "$col6" ]]; then
+	echo "ERROR: Missing columns! Found: $col1,$col2,$col3,$col4,$col5,$col6"
 	exit 1
 fi
 
-echo "Extracting cols $col1,$col2,$col3,$col4,$col5 to $destination"
+echo
+echo "Extracting cols $col1,$col2,$col3,$col4,$col5,$col6 to $destination"
 
 # extract columns
-gunzip -c "$source_filename" | cut -f"$col1,$col2,$col3,$col4,$col5" | gzip > "$destination"
+gunzip -c "$source_filename" | cut -f"$col1,$col2,$col3,$col4,$col5,$col6" | gzip > "$destination"

@@ -40,7 +40,7 @@ except ValueError:
 
 
 # get m = number of lines
-print(f'\ncalculating adjusted cutoff...')
+print(f'\ncalculating adjusted pvalue cutoff for {filename}...')
 m = -1				# subtract header line
 with gzip.open(filename, 'rt') as eQTL_file:
         for line in eQTL_file:
@@ -51,7 +51,6 @@ print(f'    non_sig_alpha = {pv_cutoff_non_sig}')
 
 
 # prepare pvalue adjustment, define necessary variables
-print(f'\nadjusting p-values...')
 if pv_cutoff >= pv_cutoff_non_sig:
 	print(f"\nWARNING! You specified a significance cutoff larger than the non-significance cutoff:")
 	print(f"alpha = {pv_cutoff}")
@@ -64,7 +63,8 @@ sig_tot = 0
 non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
-for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['variant', 'gene_id', 'pvalue'], dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
+print(f'\nBonferoni correcting p-values in {total_chunks} chunks...')
+for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
 	p_value = chunk['pvalue']
 	p_adj = np.minimum(p_value*m, 1.0)
 
@@ -92,6 +92,6 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', usecols=['varia
 
 # final message
 total_time = time.time() - start_time
-print(f'\nanalysis finished after {total_time/60:.2f} minutes!') 
+print(f'\nExtracted {sig_tot} sig and {non_sig_tot} nonsig entries and stored at {destination}!\nFinished after {total_time/60:.2f} minutes!') 
 print(f'confirm success using:')
-print(f'zcat {destination} | head -25\n')
+print(f'gunzip -c {destination} | head -25\n')
