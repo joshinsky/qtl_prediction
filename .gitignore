@@ -9,6 +9,7 @@ temp/
 results/
 
 # annoying files
+*.DS_Store*
 .DS_Store
 
 # C extensions
