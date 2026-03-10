@@ -10,8 +10,8 @@ elif [[ $location == "josh" ]]; then
 	raw_file=data/test_Alasoo2018
 else
 	echo "Please specify which machine you're working on:"
-	echo "on healthtech cluster?-->	bash pipeline.sh cluster "
-	echo "on Joshua's laptop? 	-->	bash pipeline.sh josh "
+	echo "on healthtech cluster?-->	./pipeline.sh cluster "
+	echo "on Joshua's laptop? 	-->	./pipeline.sh josh "
 	exit 1
 fi
 
