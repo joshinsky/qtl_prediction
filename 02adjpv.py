@@ -13,6 +13,7 @@ import gzip
 import math
 import pandas as pd
 import numpy as np
+import subprocess
 import time
 start_time = time.time()
 
@@ -41,10 +42,8 @@ except ValueError:
 
 # get m = number of lines
 print(f'calculating adjusted pvalue cutoff for {filename}...')
-m = -1				# subtract header line
-with gzip.open(filename, 'rt') as eQTL_file:
-        for line in eQTL_file:
-                m += 1
+result = subprocess.run(f"gunzip -c {filename} | wc -l", shell=True, capture_output=True, text=True)
+m = int(result.stdout.strip()) - 1 	# subtract header line
 print(f'working with 	m = {m}')
 print(f'        alpha_adj = {pv_cutoff/m}')
 print(f'    non_sig_alpha = {pv_cutoff_non_sig}')
