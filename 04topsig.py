@@ -19,4 +19,4 @@ most_sig = df_sorted.drop_duplicates(subset='gene_id', keep='first')
 most_sig.to_csv(destination, sep='\t', compression='gzip', index=False)
 total_time = time.time() - start_time
 print(f'finished after {total_time/60:.2f} minutes!')
-print('selected {len(most_sig)} variants.\nStored at {destination}\n")
+print(f"selected {len(most_sig)} variants.\nStored at {destination}\n")
