@@ -45,6 +45,7 @@ def make_gr_from_df(df):
 
 	# Calculate raw width
 	raw_width = df["ends"] - df["starts"]
+	safe_width = raw_width.clip(lower=1)
 	
 	# Force any negative or zero widths to be at least 1
 	safe_width = np.maximum(1, raw_width).astype(int).tolist()
@@ -53,7 +54,7 @@ def make_gr_from_df(df):
 		seqnames=df["seqnames"].tolist(),
 		ranges=IRanges(
 			start=df["starts"].tolist(), 
-			width=(safe_width).astype(int).tolist()
+			width=safe_width.astype(int).tolist()
 			),
 		strand=df["strand"].tolist() if "strand" in df.columns else ["*"] * len(df),
 		mcols=BiocFrame(meta_df.to_dict("list"))
