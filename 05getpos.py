@@ -44,10 +44,10 @@ def make_gr_from_df(df):
 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
 
 	# Calculate raw width
-    raw_width = df["ends"] - df["starts"]
-    
-    # Force any negative or zero widths to be at least 1
-    safe_width = np.maximum(1, raw_width).astype(int).tolist()
+	raw_width = df["ends"] - df["starts"]
+	
+	# Force any negative or zero widths to be at least 1
+	safe_width = np.maximum(1, raw_width).astype(int).tolist()
 	
 	gr = GenomicRanges(
 		seqnames=df["seqnames"].tolist(),
