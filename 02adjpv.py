@@ -63,30 +63,32 @@ non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
 print(f'Bonferoni correcting p-values in {total_chunks} chunks...')
-for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6, low_memory=False):
-	p_value = chunk['pvalue']
-	p_adj = np.minimum(p_value*m, 1.0)
-
-	# store p_adj, sig and non_sig in .tsv.gz
-	chunk['p_adj'] = p_adj
-	chunk['significant'] = (p_adj <= pv_cutoff).astype(int)
-	chunk['non_significant'] = (p_value >= pv_cutoff_non_sig).astype(int)
+with gzip.open(destination, 'wt') as out_file:
+	for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6, low_memory=False):
+		p_value = chunk['pvalue']
+		p_adj = np.minimum(p_value*m, 1.0)
 	
-	mask = (chunk['significant'] == 1) | (chunk['non_significant'] == 1)
-	filtered_chunk = chunk[mask]
-	if first_chunk and not filtered_chunk.empty:
-		filtered_chunk.to_csv(destination, sep='\t', mode='w', header=True, compression='gzip', index=False)
-		first_chunk = False
-	else:
-		filtered_chunk.to_csv(destination, sep='\t', mode='a', header=False, compression='gzip', index=False)
-	chunk_num +=1
-
-	# get stats for continuous output while running
-	sig = filtered_chunk['significant'].sum()
-	non_sig = filtered_chunk['non_significant'].sum()
-	sig_tot += sig
-	non_sig_tot += non_sig
-	print(f"Chunk {chunk_num}/{total_chunks}, significant: {sig} (total: {sig_tot}), non-significant: {non_sig} (total: {non_sig_tot})")
+		mask = (p_adj <= pv_cutoff) | (p_value >= pv_cutoff_non_sig)
+		filtered_chunk = chunk.loc[mask].copy()
+	
+		# store p_adj, sig and non_sig in .tsv.gz
+		filtered_chunk['p_adj'] = p_adj[mask]
+		filtered_chunk['significant'] = (filtered_chunk['p_adj'] <= pv_cutoff).astype(int)
+		filtered_chunk['non_significant'] = (filtered_chunk['pvalue'] >= pv_cutoff_non_sig).astype(int)
+		
+		if first_chunk and not filtered_chunk.empty:
+			filtered_chunk.to_csv(out_file, sep='\t', header=True, index=False)
+			first_chunk = False
+		elif not filtered_chunk.empty:
+			filtered_chunk.to_csv(out_file, sep='\t', header=False, index=False)
+		chunk_num +=1
+	
+		# get stats for continuous output while running
+		sig = filtered_chunk['significant'].sum()
+		non_sig = filtered_chunk['non_significant'].sum()
+		sig_tot += sig
+		non_sig_tot += non_sig
+		print(f"Chunk {chunk_num}/{total_chunks}, significant: {sig} (total: {sig_tot}), non-significant: {non_sig} (total: {non_sig_tot})")
 
 
 # final message
