@@ -110,8 +110,8 @@ variants_gr = make_gr_from_df(input_df)
 
 # Calculate overlaps for both genes and exons
 print(f"classifying positional overlaps for each variant...\n")
-exon_counts = variants_gr.count_overlaps(exons_gr)
-gene_counts = variants_gr.count_overlaps(genes_gr)
+exon_counts = exons_gr.count_overlaps(variants_gr)
+gene_counts = genes_gr.count_overlaps(variants_gr)
 
 # Loop through variant indeces and count exonic, intronic overlap
 classifications = []
