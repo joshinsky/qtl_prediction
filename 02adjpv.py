@@ -64,7 +64,7 @@ non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
 print(f'Bonferoni correcting p-values in {total_chunks} chunks...')
-for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
+for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6, low_memory=False):
 	p_value = chunk['pvalue']
 	p_adj = np.minimum(p_value*m, 1.0)
 

@@ -95,8 +95,8 @@ else:
 
 # load data
 print(f"loading data...")
-pos_df = pd.read_csv(positives_filename, compression='gzip', sep='\t')
-nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t')
+pos_df = pd.read_csv(positives_filename, compression='gzip', sep='\t', low_memory=False)
+nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t', low_memory=False)
 
 print(f"finding negative control candidates...")
 neg_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)

@@ -25,7 +25,7 @@ if not source_filename.endswith('.tsv.gz') or not sig_destination.endswith('.tsv
 print(f"splitting {source_filename} on significance.")
 chunk_size = 5*10**6
 first_chunk = True
-for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksize=chunk_size):
+for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksize=chunk_size, low_memory=False):
 	# define split masks
 	sig_mask = (chunk['significant'] == 1)
 	nsig_mask = (chunk['non_significant'] == 1)

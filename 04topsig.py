@@ -8,10 +8,12 @@ start_time = time.time()
 
 source_filename = sys.argv[1]
 destination = sys.argv[2]
-df = pd.read_csv(source_filename, compression='gzip', sep='\t')
+df = pd.read_csv(source_filename, compression='gzip', sep='\t', low_memory=False)
 
 # get most significant variants per gene
 print(f"Extracting most significant variants per gene from {source_filename}...")
+# Force pvalue column to be numeric, turning any strings into NaNs
+df['pvalue'] = pd.to_numeric(df['pvalue'], errors='coerce')
 df_sorted = df.sort_values('pvalue', ascending=True)
 most_sig = df_sorted.drop_duplicates(subset='gene_id', keep='first')
 most_sig.to_csv(destination, sep='\t', compression='gzip', index=False)

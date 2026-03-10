@@ -42,11 +42,18 @@ except IndexError:
 # function for translating a data frame into a gr object
 def make_gr_from_df(df):
 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
+
+	# Calculate raw width
+    raw_width = df["ends"] - df["starts"]
+    
+    # Force any negative or zero widths to be at least 1
+    safe_width = np.maximum(1, raw_width).astype(int).tolist()
+	
 	gr = GenomicRanges(
 		seqnames=df["seqnames"].tolist(),
 		ranges=IRanges(
 			start=df["starts"].tolist(), 
-			width=(df["ends"] - df["starts"]).astype(int).tolist()
+			width=(safe_width).astype(int).tolist()
 			),
 		strand=df["strand"].tolist() if "strand" in df.columns else ["*"] * len(df),
 		mcols=BiocFrame(meta_df.to_dict("list"))
@@ -72,7 +79,7 @@ else:
 
 # load gene variant data
 print(f"loading variant data...")
-input_df = pd.read_csv(input_filename, compression='gzip', sep='\t')
+input_df = pd.read_csv(input_filename, compression='gzip', sep='\t', low_memory=False)
 
 # filter gtf genes only by target gene IDs
 print(f"extracting target genes...")
