@@ -4,6 +4,8 @@ import os
 import sys
 import pandas as pd
 import numpy as np
+import time
+start_time = time.time()
 
 
 ##############################
@@ -13,9 +15,9 @@ import numpy as np
 
 # function explaining the program usage
 def usage():
-	print("\nprogram usage:")
+	print("program usage:")
 	print(f"python3 {sys.argv[0]} <positives_filename> <non_sig_filename> <destination> [criteria]")
-	print(f"\ncriteria could be: gene, location, variant")
+	print(f"criteria could be: gene, location, variant")
 	print(f"the order of criteria determines their importance\n")
 	sys.exit(1)
 
@@ -29,11 +31,11 @@ try:
 	non_sig_filename = sys.argv[2]
 	destination_filename = sys.argv[3]
 except IndexError:
-	print(f"\nI am missing a filename.")
+	print(f"I am missing a filename.")
 	usage()
 
 if not positives_filename.endswith('.tsv.gz') or not non_sig_filename.endswith('.tsv.gz') or not destination_filename.endswith('.tsv.gz'):
-	print(f"\nI am missing a filename. These were given:")
+	print(f"I am missing a filename. These were given:")
 	print(f"\tpositives_filename = {positives_filename}")
 	print(f"\tnon_sig_filename = {non_sig_filename}")
 	print(f"\tdestination_filename = {destination_filename}")
@@ -74,15 +76,15 @@ for c in criteria_args:
 
 # handle unusable/invalid criteria
 if len(criteria_used) == 0:
-	print(f"Input criteria were not valid.")
+	print(f"input criteria were not valid.")
 	usage()
 if len(criteria_used) != len(criteria_args):
-	print(f"Warning! Could not find all desired criteria.")
-	print(f"Input: {criteria_args}")
-	print(f"Using: {criteria_used}")
-	print(f"To interrupt, press ctrl+C")
+	print(f"warning! Could not find all desired criteria.")
+	print(f"input: {criteria_args}")
+	print(f"using: {criteria_used}")
+	print(f"to interrupt, press ctrl+C")
 else:
-	print(f"Using: {criteria_used}\n")
+	print(f"using: {criteria_used}")
 
 
 #########################################
@@ -92,10 +94,11 @@ else:
 
 
 # load data
-print(f"loading data...\n")
+print(f"loading data...")
 pos_df = pd.read_csv(positives_filename, compression='gzip', sep='\t')
 nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t')
 
+print(f"finding negative control candidates...")
 neg_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
 
 if len(neg_df.index) < len(pos_df.index):
@@ -103,12 +106,14 @@ if len(neg_df.index) < len(pos_df.index):
 	print(f"found {len(neg_df.index)} negatives for {len(pos_df.index)} positives.")
 
 # keep only the first gene in case of multiple perfect matches
+print(f"selecting negative controls...")
 neg_df = neg_df.drop_duplicates(subset=['gene_id'])
 
-print(f"Storing results")
+print(f"storing results...")
 # control_df = pd.DataFrame(control_rows)
 neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
-print(f"Finished! results can be found at {destination_filename}")
-print(f"Confirm using:\ngunzip -c {destination_filename} | head")
+total_time = time.time() - start_time
+print(f'finished after {total_time/60:.2f} minutes!') 
+print(f"results can be found at {destination_filename}\n")
 

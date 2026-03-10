@@ -1,6 +1,7 @@
 #!/bin/bash
 
 location=$1
+test=$2
 
 if [[ $location == "cluster" ]]; then
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
@@ -15,48 +16,83 @@ else
 	exit 1
 fi
 
-# subset to 5,000,000 rows (5%) + header
-gunzip -c $raw_file | head -5000001 | gzip > temp/test_subset.tsv.gz
+# subset to 5,000,000 rows + header
+if [[ $test == "test" ]]; then
+	echo
+	echo
+	echo "running test for $raw_file on first 5 Mio. rows"
+	echo
+	gunzip -c $raw_file | head -5000001 | gzip > temp/test_subset.tsv.gz
+	startfile=temp/test_subset.tsv.gz
+else
+	echo
+	echo
+	echo "running pipeline for $raw_file"
+	echo
+	startfile=$raw_file
+fi
 
 # subset columns
 # ./01getcols.sh temp/test_subset.tsv.gz temp/test_subset_cols.tsv.gz
 
-# view results
-# gunzip -c temp/test_subset_cols.tsv.gz | head -15
-
 # adjust pvalue and split in sig and non sig
+echo
+echo "run 02adjpv.py"
 if [[ $location == "cluster" ]]; then
-	./02adjpv.py temp/test_subset.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
+	./02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
 elif [[ $location == "josh" ]]; then
-	python3 02adjpv.py temp/test_subset.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
-
-# view results
-# gunzip -c temp/test_padj.tsv.gz | head -25
-
-# add sequence and positional data
+	python3 02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
+fi
 
 # split on sig 
+echo
+echo "run 03splitsig.py"
 if [[ $location == "cluster" ]]; then
-	./04splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+	./03splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
 elif [[ $location == "josh" ]]; then
-	python3 04splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
-
-# gunzip -c temp/test_sig.tsv.gz | cut -f5,6 | head -25
-# echo
-# gunzip -c temp/test_nonsig.tsv.gz | cut -f5,6 | head -25
+	python3 03splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+fi
 
 # get most sig variants per gene
+echo
+echo "run 04topsig.py"
 if [[ $location == "cluster" ]]; then
-	./05topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	./04topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 05topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	python3 04topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+fi
 
-# add sequence and positional info 
+# add positional info for sigs
+echo
+echo "run 05getpos.py on significant variants"
 if [[ $location == "cluster" ]]; then
-	./06getseq.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	./05getpos.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 06getseq.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	python3 05getpos.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+fi
+
+# add positional info for non-sigs
+echo
+echo "run 05getpos.py on non-significant variants"
+if [[ $location == "cluster" ]]; then
+	./05getpos.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+elif [[ $location == "josh" ]]; then
+	python3 05getpos.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+fi
 
 # get negative controls
-# ./07getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig.tsv.gz temp/test_negatives.tsv.gz gene variant
+echo
+echo "run 06getcontrol.py"
+if [[ $location == "cluster" ]]; then
+	./06getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+elif [[ $location == "josh" ]]; then
+	python3 06getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+fi
 
+
+echo
+echo "############################################"
+echo "finished for $raw_file"
+echo "############################################"
+echo
+echo

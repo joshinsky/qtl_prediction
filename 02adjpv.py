@@ -40,22 +40,22 @@ except ValueError:
 
 
 # get m = number of lines
-print(f'\ncalculating adjusted pvalue cutoff for {filename}...')
+print(f'calculating adjusted pvalue cutoff for {filename}...')
 m = -1				# subtract header line
 with gzip.open(filename, 'rt') as eQTL_file:
         for line in eQTL_file:
                 m += 1
-print(f'\nworking with 	m = {m}')
+print(f'working with 	m = {m}')
 print(f'        alpha_adj = {pv_cutoff/m}')
 print(f'    non_sig_alpha = {pv_cutoff_non_sig}')
 
 
 # prepare pvalue adjustment, define necessary variables
 if pv_cutoff >= pv_cutoff_non_sig:
-	print(f"\nWARNING! You specified a significance cutoff larger than the non-significance cutoff:")
+	print(f"WARNING! You specified a significance cutoff larger than the non-significance cutoff:")
 	print(f"alpha = {pv_cutoff}")
 	print(f"non_sig_alpha = {pv_cutoff_non_sig}")
-	print(f"perhaps you got the inputs mixed up? To abort press ctrl+C\n")
+	print(f"perhaps you got the inputs mixed up? To abort press ctrl+C")
 total_chunks = math.ceil(m/(5*10**6))
 first_chunk = True
 chunk_num = 0
@@ -63,7 +63,7 @@ sig_tot = 0
 non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
-print(f'\nBonferoni correcting p-values in {total_chunks} chunks...')
+print(f'Bonferoni correcting p-values in {total_chunks} chunks...')
 for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6):
 	p_value = chunk['pvalue']
 	p_adj = np.minimum(p_value*m, 1.0)
@@ -92,6 +92,7 @@ for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant
 
 # final message
 total_time = time.time() - start_time
-print(f'\nExtracted {sig_tot} sig and {non_sig_tot} nonsig entries and stored at {destination}!\nFinished after {total_time/60:.2f} minutes!') 
-print(f'confirm success using:')
-print(f'gunzip -c {destination} | head -25\n')
+print(f'finished after {total_time/60:.2f} minutes!')
+print(f'extracted {sig_tot} sig and {non_sig_tot} nonsig entries...')
+print(f'stored at {destination}\n')
+

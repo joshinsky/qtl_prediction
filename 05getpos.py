@@ -8,7 +8,8 @@ import genomicranges
 from genomicranges import GenomicRanges
 from iranges import IRanges
 from biocframe import BiocFrame
-# import biostrings
+import time
+start_time = time.time()
 
 ##############################
 ##   01 - Get user input    ##
@@ -17,7 +18,7 @@ from biocframe import BiocFrame
 
 # function explaining the program usage
 def usage():
-	print("\nprogram usage:")
+	print("program usage:")
 	print(f"python3 {sys.argv[0]} <filename> <destination>")
 	sys.exit(1)
 
@@ -30,7 +31,7 @@ try:
 	input_filename = sys.argv[1]
 	destination_filename = sys.argv[2]
 except IndexError:
-	print(f"\nI am missing a filename.")
+	print(f"I am missing a filename.")
 	usage()
 
 ##############################
@@ -58,23 +59,23 @@ parquet_path = "data/gencode.v49.primary_assembly.annotation.parquet"
 
 # load GTF data
 if os.path.exists(parquet_path):
-	print(f"loading GTF data from Parquet file...\n")
+	print(f"loading GTF data from Parquet file...")
 	gtf_df = pd.read_parquet(parquet_path)
 else:
-	print("No cache found. Parsing raw GTF (this will take a while)...\n")
+	print("no cache found: parsing raw GTF (this will take a while)...")
 	gtf_gr = genomicranges.read_gtf(gtf_path)
 	gtf_df = gtf_gr.to_pandas()
 
 	# Save it to Parquet for the next time
-	print("Saving to Parquet for faster loading next time...\n")
+	print("Saving to Parquet for faster loading next time...")
 	gtf_df.to_parquet(parquet_path, index=False)
 
 # load gene variant data
-print(f"loading variant data...\n")
+print(f"loading variant data...")
 input_df = pd.read_csv(input_filename, compression='gzip', sep='\t')
 
 # filter gtf genes only by target gene IDs
-print(f"extracting target genes...\n")
+print(f"extracting target genes...")
 
 gtf_df['base_gene_id'] = gtf_df['gene_id'].astype(str).str.split('.').str[0]	# look only at raw gene IDs without .1 or similar suffix
 input_df['base_gene_id'] = input_df['gene_id'].astype(str).str.split('.').str[0]
@@ -82,10 +83,10 @@ target_gene_ids = input_df["base_gene_id"].tolist()
 mask = gtf_df["base_gene_id"].isin(target_gene_ids)
 target_gtf = gtf_df[mask]
 
-print(f"found {len(target_gtf)}/{len(input_df)} target genes.\n")
+print(f"found {len(target_gtf)}/{len(input_df)} target genes.")
 
 # Extract the full gene boundaries and exonic regions then convert to gr objects
-print(f"retrieving positional indeces...\n")
+print(f"retrieving positional indeces...")
 genes_df = target_gtf[target_gtf["feature"] == "gene"]
 exons_df = target_gtf[target_gtf["feature"] == "exon"]
 genes_gr = make_gr_from_df(genes_df)
@@ -109,7 +110,7 @@ variants_gr = make_gr_from_df(input_df)
 ##############################
 
 # Calculate overlaps for both genes and exons
-print(f"classifying positional overlaps for each variant...\n")
+print(f"classifying positional overlaps for each variant...")
 exon_counts = exons_gr.count_overlaps(variants_gr)
 gene_counts = genes_gr.count_overlaps(variants_gr)
 
@@ -127,12 +128,14 @@ for e_count, g_count in zip(exon_counts, gene_counts):
 input_df["variant_location"] = classifications
 
 # Save the final output
-print(f"\nSaving results to {destination_filename}...\n")
+print(f"saving results to {destination_filename}...")
 input_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
-print("Summary:")
+total_time = time.time() - start_time
+print(f'finished after {total_time/60:.2f} minutes!') 
+print(f"summary for {destination_filename}:")
 print(input_df["variant_location"].value_counts())
-
+print('')
 
 
 

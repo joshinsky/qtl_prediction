@@ -22,7 +22,7 @@ if not source_filename.endswith('.tsv.gz') or not sig_destination.endswith('.tsv
 	sys.exit(1)
 
 # split file on sig and non_sig in chunks for memory
-print(f"\nsplitting {source_filename} on significance.")
+print(f"splitting {source_filename} on significance.")
 chunk_size = 5*10**6
 first_chunk = True
 for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksize=chunk_size):
@@ -46,6 +46,6 @@ for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksiz
 
 # final message
 total_time = time.time() - start_time
-print(f'\nFinished splitting after {total_time/60:.2f} minutes!') 
-print(f'confirm success using:')
-print(f'gunzip -c {sig_destination} | head -25\ngunzip -c {nsig_destination} | head -25\n')
+print(f'finished after {total_time/60:.2f} minutes!') 
+print(f'significant set stored at: {sig_destination}')
+print(f'non-significant set stored at: {nsig_destination}\n')
