@@ -148,7 +148,40 @@ pos_df = pd.read_csv(positives_filename, compression='gzip', sep='\t')
 nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t')
 
 negatives_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
-print(negatives_df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

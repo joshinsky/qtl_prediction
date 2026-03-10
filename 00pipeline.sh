@@ -19,13 +19,16 @@ fi
 gunzip -c $raw_file | head -5000001 | gzip > temp/test_subset.tsv.gz
 
 # subset columns
-./01getcols.sh temp/test_subset.tsv.gz temp/test_subset_cols.tsv.gz
+# ./01getcols.sh temp/test_subset.tsv.gz temp/test_subset_cols.tsv.gz
 
 # view results
 # gunzip -c temp/test_subset_cols.tsv.gz | head -15
 
 # adjust pvalue and split in sig and non sig
-./02adjpv.py temp/test_subset_cols.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
+if [[ $location == "cluster" ]]; then
+	./02adjpv.py temp/test_subset.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
+elif [[ $location == "josh" ]]; then
+	python3 02adjpv.py temp/test_subset.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
 
 # view results
 # gunzip -c temp/test_padj.tsv.gz | head -25
@@ -33,14 +36,27 @@ gunzip -c $raw_file | head -5000001 | gzip > temp/test_subset.tsv.gz
 # add sequence and positional data
 
 # split on sig 
-./04splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+if [[ $location == "cluster" ]]; then
+	./04splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+elif [[ $location == "josh" ]]; then
+	python3 04splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
 
 # gunzip -c temp/test_sig.tsv.gz | cut -f5,6 | head -25
 # echo
 # gunzip -c temp/test_nonsig.tsv.gz | cut -f5,6 | head -25
 
 # get most sig variants per gene
-./05topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+if [[ $location == "cluster" ]]; then
+	./05topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+elif [[ $location == "josh" ]]; then
+	python3 05topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+
+# add sequence and positional info 
+if [[ $location == "cluster" ]]; then
+	./06getseq.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+elif [[ $location == "josh" ]]; then
+	python3 06getseq.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
 
 # get negative controls
-./06getcontrol.py temp/test_most_sig.tsv.gz temp/test_nonsig.tsv.gz temp/test_negatives.tsv.gz gene variant
+# ./07getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig.tsv.gz temp/test_negatives.tsv.gz gene variant
+
