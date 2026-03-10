@@ -72,7 +72,7 @@ criterion_to_col = {
 criteria_used = []
 for c in criteria_args:
     if c in criterion_to_col:
-        criteria_used.append(c)
+        criteria_used.append(criterion_to_col[c])
 
 # handle unusable/invalid criteria
 if len(criteria_used) == 0:
