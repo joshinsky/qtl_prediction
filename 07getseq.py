@@ -5,7 +5,7 @@ import sys
 import pandas as pd
 import numpy as np
 import time
-import biostrings
+#import biostrings
 from pyfaidx import Fasta
 start_time = time.time()
 
