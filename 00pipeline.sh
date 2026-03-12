@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-set -o pipefail
+# set -e
+# set -o pipefail
 
 # get user input
 location=$1
