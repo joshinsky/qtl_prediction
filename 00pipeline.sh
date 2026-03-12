@@ -23,6 +23,11 @@ if [ ! -d "temp" ]; then
 	mkdir temp
 fi
 
+if [ ! -d "results" ]; then
+	echo "making /results directory."
+	mkdir results
+fi
+
 # get test file
 if [[ $location == "cluster" ]]; then
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction
@@ -160,9 +165,9 @@ fi
 echo
 echo "run 07getseq.py"
 if [[ $location == "cluster" ]]; then
-	./07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/test_seqs.tsv.gz
+	./07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/test_seqs.tsv.gz
+	python3 07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 fi
 
 echo
