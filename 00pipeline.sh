@@ -26,8 +26,7 @@ fi
 # get test file
 if [[ $location == "cluster" ]]; then
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction
-	source /home/ctools/opt/anaconda-2025-12-2/bin/activate
-	conda activate josh_env
+	source /home/ctools/opt/anaconda-2025-12-2/bin/activate josh_env
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
 	test_file=/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz
 elif [[ $location == "josh" ]]; then
