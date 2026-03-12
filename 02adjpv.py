@@ -63,24 +63,31 @@ non_sig_tot = 0
 
 # get significant and non-significant entries as bool (1|0)
 print(f'Bonferoni correcting p-values in {total_chunks} chunks...')
-with gzip.open(destination, 'wt') as out_file:
+with gzip.open(destination, 'wt') as outfile:
 	for chunk in pd.read_csv(filename, compression='gzip', sep='\t', dtype={'variant':'string', 'gene_id':'string', 'pvalue':'float32'}, chunksize=5*10**6, low_memory=False):
+		
+		# subset to only necessary columns
+		chunk.drop(columns=["ma_samples", "maf", "beta", "se", "ac", "an", "r2", "rsid"], inplace=True, errors='ignore')
+
+		# adjust pvalue
 		p_value = chunk['pvalue']
 		p_adj = np.minimum(p_value*m, 1.0)
 	
+		# remove non-significant entries >alpha_non_sig
 		mask = (p_adj <= pv_cutoff) | (p_value >= pv_cutoff_non_sig)
 		filtered_chunk = chunk.loc[mask].copy()
 	
-		# store p_adj, sig and non_sig in .tsv.gz
+		# store p_adj, sig and non_sig as new columns
 		filtered_chunk['p_adj'] = p_adj[mask]
 		filtered_chunk['significant'] = (filtered_chunk['p_adj'] <= pv_cutoff).astype(int)
 		filtered_chunk['non_significant'] = (filtered_chunk['pvalue'] >= pv_cutoff_non_sig).astype(int)
 		
+		# write to .tsv.gz
 		if first_chunk and not filtered_chunk.empty:
-			filtered_chunk.to_csv(out_file, sep='\t', header=True, index=False)
+			filtered_chunk.to_csv(outfile, sep='\t', header=True, index=False)
 			first_chunk = False
 		elif not filtered_chunk.empty:
-			filtered_chunk.to_csv(out_file, sep='\t', header=False, index=False)
+			filtered_chunk.to_csv(outfile, sep='\t', header=False, index=False)
 		chunk_num +=1
 	
 		# get stats for continuous output while running
@@ -88,7 +95,7 @@ with gzip.open(destination, 'wt') as out_file:
 		non_sig = filtered_chunk['non_significant'].sum()
 		sig_tot += sig
 		non_sig_tot += non_sig
-		print(f"Chunk {chunk_num}/{total_chunks}, significant: {sig} (total: {sig_tot}), non-significant: {non_sig} (total: {non_sig_tot})")
+		print(f"chunk {chunk_num}/{total_chunks}, significant: {sig}, non-significant: {non_sig}")
 
 
 # final message

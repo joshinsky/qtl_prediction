@@ -49,7 +49,7 @@ def make_gr_from_df(df):
 	ends_arr = pd.to_numeric(df["ends"], errors='coerce').fillna(0).to_numpy()
 	
 	# Calculate width safely as pure numpy arrays
-	raw_width = ends_arr - starts_arr
+	raw_width = ends_arr - starts_arr + 1
 	
 	# Force any value < 1 to become 1 using numpy's clip
 	safe_width = np.clip(raw_width, a_min=1, a_max=None)
@@ -117,7 +117,7 @@ print(f"extracting target genes...")
 target_gene_ids = input_df["base_gene_id"].tolist()
 mask = gtf_df["base_gene_id"].isin(target_gene_ids)
 target_gtf = gtf_df[mask]
-print(f"found {len(target_gtf)}/{len(input_df)} target genes.")
+print(f"found {len(target_gtf)} entries for {len(input_df)} target genes (this includes genes, transcripts and exons).")
 
 # Extract the full gene boundaries and exonic regions then convert to gr objects
 print(f"retrieving positional indeces...")
@@ -161,6 +161,20 @@ for e_count, g_count in zip(exon_counts, gene_counts):
 
 # Make column for resulting annotations
 input_df["variant_location"] = classifications
+
+# revert 'seqnames' column back to 'chromosome'
+input_df = input_df.rename(columns={"seqnames": "chromosome"})
+input_df = input_df.drop(columns=["base_gene_id"], errors='ignore')
+
+# move 'ends' column behind 'starts'
+cols = list(input_df.columns)
+cols.remove("ends")
+starts_idx = cols.index("starts")
+cols.insert(starts_idx + 1, "ends")
+cols.remove("variant_location")
+starts_idx = cols.index("type")
+cols.insert(starts_idx + 1, "variant_location")
+input_df = input_df[cols]
 
 # Save the final output
 print(f"saving results to {destination_filename}...")

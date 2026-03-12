@@ -110,6 +110,16 @@ print(f"found {len(neg_df.index)} negatives for {len(pos_df.index)} positives.")
 print(f"selecting negative controls...")
 neg_df = neg_df.drop_duplicates(subset=['gene_id'])
 
+# remove positive columns from negative set and remove _y suffix from negative df
+cols_to_drop = [col for col in neg_df.columns if col.endswith('_x')]
+neg_df = neg_df.drop(columns=cols_to_drop)
+rename_dict = {col: col[:-2] for col in neg_df.columns if col.endswith('_y')}
+neg_df = neg_df.rename(columns=rename_dict)
+
+# restore the original column order
+neg_df = neg_df[nsig_df.columns]
+
+# store outout
 print(f"storing results...")
 neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
