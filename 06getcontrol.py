@@ -104,7 +104,7 @@ neg_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
 # warn the user if less negative controls were found than positives
 if len(neg_df.index) < len(pos_df.index):
 	print("could not find negative control for all positive controls!")
-	print(f"found {len(neg_df.index)} negatives for {len(pos_df.index)} positives.")
+print(f"found {len(neg_df.index)} negatives for {len(pos_df.index)} positives.")
 
 # keep only the first gene in case of multiple perfect matches
 print(f"selecting negative controls...")
