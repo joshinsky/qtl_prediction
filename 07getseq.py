@@ -31,7 +31,6 @@ try:
 except IndexError:
 	print(f"I am missing a filename.")
 	usage()
-
 if not variant_filename.endswith('.tsv.gz') or not destination_filename.endswith('.tsv.gz'):
 	print(f"Make sure that variant and destination are .tsv.gz format!")
 	print(f"\tpositives_filename = {variant_filename}")
@@ -41,7 +40,6 @@ if not reference_filename.endswith('.fa.gz'):
 	print(f"Make sure that reference file is .fa.gz format!")
 	print(f"\tGiven: {reference_filename}")
 	usage()
-
 if not os.path.exists(variant_filename): 
 	print(f"{variant_filename} was not found at specified location.")
 	sys.exit(1)

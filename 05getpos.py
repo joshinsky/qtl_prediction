@@ -39,53 +39,53 @@ except IndexError:
 ##  get gr objects          ##
 ##############################
 
-# def make_gr_from_df(df):
-# 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
-	
-# 	# Explicitly cast to numeric numpy arrays to avoid any list or dtype weirdness
-# 	# We use errors='coerce' to turn any unexpected string junk into NaNs, 
-# 	# and fillna(0) to ensure the math doesn't crash on NaNs.
-# 	starts_arr = pd.to_numeric(df["starts"], errors='coerce').fillna(0).to_numpy()
-# 	ends_arr = pd.to_numeric(df["ends"], errors='coerce').fillna(0).to_numpy()
-	
-# 	# Calculate width safely as pure numpy arrays
-# 	raw_width = ends_arr - starts_arr
-	
-# 	# Force any value < 1 to become 1 using numpy's clip
-# 	safe_width = np.clip(raw_width, a_min=1, a_max=None)
-	
-# 	gr = GenomicRanges(
-# 		seqnames=df["seqnames"].tolist(),
-# 		ranges=IRanges(
-# 			start=starts_arr.astype(int).tolist(), 
-# 			width=safe_width.astype(int).tolist()
-# 			),
-# 		strand=df["strand"].tolist() if "strand" in df.columns else ["*"] * len(df),
-# 		mcols=BiocFrame(meta_df.to_dict("list"))
-# 		)
-# 	return gr
-
-# function for translating a data frame into a gr object
 def make_gr_from_df(df):
 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
-
-	# Calculate raw width
-	raw_width = df["ends"] - df["starts"]
-	safe_width = raw_width.clip(lower=1)
 	
-	# Force any negative or zero widths to be at least 1
-	safe_width = np.maximum(1, raw_width).astype(int).tolist()
+	# Explicitly cast to numeric numpy arrays to avoid any list or dtype weirdness
+	# We use errors='coerce' to turn any unexpected string junk into NaNs, 
+	# and fillna(0) to ensure the math doesn't crash on NaNs.
+	starts_arr = pd.to_numeric(df["starts"], errors='coerce').fillna(0).to_numpy()
+	ends_arr = pd.to_numeric(df["ends"], errors='coerce').fillna(0).to_numpy()
+	
+	# Calculate width safely as pure numpy arrays
+	raw_width = ends_arr - starts_arr
+	
+	# Force any value < 1 to become 1 using numpy's clip
+	safe_width = np.clip(raw_width, a_min=1, a_max=None)
 	
 	gr = GenomicRanges(
 		seqnames=df["seqnames"].tolist(),
 		ranges=IRanges(
-			start=df["starts"].tolist(), 
+			start=starts_arr.astype(int).tolist(), 
 			width=safe_width.astype(int).tolist()
 			),
 		strand=df["strand"].tolist() if "strand" in df.columns else ["*"] * len(df),
 		mcols=BiocFrame(meta_df.to_dict("list"))
 		)
 	return gr
+
+# # function for translating a data frame into a gr object
+# def make_gr_from_df(df):
+# 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
+
+# 	# Calculate raw width
+# 	raw_width = df["ends"] - df["starts"]
+# 	safe_width = raw_width.clip(lower=1)
+	
+# 	# Force any negative or zero widths to be at least 1
+# 	safe_width = np.maximum(1, raw_width).astype(int).tolist()
+	
+# 	gr = GenomicRanges(
+# 		seqnames=df["seqnames"].tolist(),
+# 		ranges=IRanges(
+# 			start=df["starts"].tolist(), 
+# 			width=safe_width.astype(int).tolist()
+# 			),
+# 		strand=df["strand"].tolist() if "strand" in df.columns else ["*"] * len(df),
+# 		mcols=BiocFrame(meta_df.to_dict("list"))
+# 		)
+# 	return gr
 
 # Define gtf file paths
 gtf_path = "data/gencode.v49.primary_assembly.annotation.gtf.gz"

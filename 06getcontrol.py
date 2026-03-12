@@ -97,9 +97,11 @@ print(f"loading data...")
 pos_df = pd.read_csv(positives_filename, compression='gzip', sep='\t', low_memory=False)
 nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t', low_memory=False)
 
+# find negative candidates using an inner join with positives
 print(f"finding negative control candidates...")
 neg_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
 
+# warn the user if less negative controls were found than positives
 if len(neg_df.index) < len(pos_df.index):
 	print("could not find negative control for all positive controls!")
 	print(f"found {len(neg_df.index)} negatives for {len(pos_df.index)} positives.")
@@ -109,7 +111,6 @@ print(f"selecting negative controls...")
 neg_df = neg_df.drop_duplicates(subset=['gene_id'])
 
 print(f"storing results...")
-# control_df = pd.DataFrame(control_rows)
 neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
 total_time = time.time() - start_time
