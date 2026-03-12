@@ -67,7 +67,6 @@ if [[ $location == "cluster" ]]; then
 	./02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
 elif [[ $location == "josh" ]]; then
 	python3 02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
-	# python3 02adjpv.py temp/test_subset.tsv.gz temp/test_padj.tsv.gz 0.05 0.9
 fi
 
 
