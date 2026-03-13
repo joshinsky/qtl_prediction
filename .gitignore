@@ -8,9 +8,10 @@ data/
 temp/
 results/
 
-# annoying files
+# files
 *.DS_Store*
 .DS_Store
+01getcols.sh
 
 # C extensions
 *.so
