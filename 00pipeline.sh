@@ -1,12 +1,12 @@
 #!/bin/bash
 
+# stop pipeline on error
 set -e
 set -o pipefail
 
 # get user input
 location=$1
 test=$2
-# study=$3
 
 ################
 ## get set up ##
@@ -67,11 +67,11 @@ fi
 
 # adjust pvalue and split in sig and non sig
 echo
-echo "run 02adjpv.py"
+echo "run 01adjpv.py"
 if [[ $location == "cluster" ]]; then
-	./02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
+	./01adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
 elif [[ $location == "josh" ]]; then
-	python3 02adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
+	python3 01adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
 fi
 
 
@@ -81,20 +81,20 @@ fi
 
 # split on sig 
 echo
-echo "run 03splitsig.py"
+echo "run 02splitsig.py"
 if [[ $location == "cluster" ]]; then
-	./03splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+	./02splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
 elif [[ $location == "josh" ]]; then
-	python3 03splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+	python3 02splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
 fi
 
 # get most sig variants per gene
 echo
-echo "run 04topsig.py"
+echo "run 03topsig.py"
 if [[ $location == "cluster" ]]; then
-	./04topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	./03topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 04topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	python3 03topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
 fi
 
 
@@ -113,20 +113,20 @@ fi
 
 # add positional info for sigs
 echo
-echo "run 05getpos.py on significant variants"
+echo "run 04getposition.py on significant variants"
 if [[ $location == "cluster" ]]; then
-	./05getpos.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	./04getposition.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 05getpos.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	python3 04getposition.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
 fi
 
 # add positional info for non-sigs
 echo
-echo "run 05getpos.py on non-significant variants"
+echo "run 04getposition.py on non-significant variants"
 if [[ $location == "cluster" ]]; then
-	./05getpos.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+	./04getposition.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 05getpos.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+	python3 04getposition.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
 fi
 
 
@@ -136,11 +136,11 @@ fi
 
 # get negative controls
 echo
-echo "run 06getcontrol.py"
+echo "run 05getnegatives.py"
 if [[ $location == "cluster" ]]; then
-	./06getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+	./05getnegatives.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
 elif [[ $location == "josh" ]]; then
-	python3 06getcontrol.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+	python3 05getnegatives.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
 fi
 
 
@@ -163,11 +163,11 @@ if [ ! -f "data/GRCh38.primary_assembly.genome.fa.bgz.fai" ]; then
 fi
 
 echo
-echo "run 07getseq.py"
+echo "run 06getsequences.py"
 if [[ $location == "cluster" ]]; then
-	./07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	./06getsequences.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 07getseq.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	python3 06getsequences.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 fi
 
 echo
