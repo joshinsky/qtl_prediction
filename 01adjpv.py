@@ -1,4 +1,4 @@
-#!/home/ctools/opt/anaconda-2025-12-2/bin/python3
+#!/net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python3
 
 
 ##################################################

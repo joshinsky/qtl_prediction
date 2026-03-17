@@ -6,7 +6,9 @@ set -o pipefail
 
 # get user input
 location=$1
-test=$2
+file=$2
+prefix=$3
+test=$4
 
 ################
 ## get set up ##
@@ -33,10 +35,8 @@ if [[ $location == "cluster" ]]; then
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction
 	source /home/ctools/opt/anaconda-2025-12-2/bin/activate josh_env
 	cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
-	test_file=/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz
 elif [[ $location == "josh" ]]; then
 	cd "/Users/Study/Library/CloudStorage/OneDrive-Personal/002 Education/002 Uni/004 DTU/004 Semester/26_02_S2/specou/repo"
-	test_file=data/test_Alasoo2018.tsv.gz
 else
 	echo "Please specify which machine you're working on:"
 	echo "on healthtech cluster?-->	./pipeline.sh cluster "
@@ -48,18 +48,16 @@ fi
 if [[ $test == "test" ]]; then
 	echo
 	echo
-	echo "running test for $test_file on first 5 Mio. rows"
+	echo "running test for $file on first 5 Mio. rows"
 	echo
-	gunzip -c $test_file | head -5000001 | gzip > temp/test_subset.tsv.gz
-	echo "subset 1"
-	startfile=temp/test_subset.tsv.gz
-	echo "subset 2"
+	gunzip -c $file | head -5000001 | gzip > temp/"$prefix"_subset.tsv.gz
+	startfile=temp/"$prefix"_subset.tsv.gz
 else
 	echo
 	echo
-	echo "running pipeline for $test_file"
+	echo "running pipeline for $file"
 	echo
-	startfile=$test_file
+	startfile=$file
 fi
 
 
@@ -71,9 +69,9 @@ fi
 echo
 echo "run 01adjpv.py"
 if [[ $location == "cluster" ]]; then
-	./01adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
+	./01adjpv.py $startfile temp/"$prefix"_padj.tsv.gz 0.05 0.9
 elif [[ $location == "josh" ]]; then
-	python3 01adjpv.py $startfile temp/test_padj.tsv.gz 0.05 0.9
+	python3 01adjpv.py $startfile temp/"$prefix"_padj.tsv.gz 0.05 0.9
 fi
 
 
@@ -85,18 +83,18 @@ fi
 echo
 echo "run 02splitsig.py"
 if [[ $location == "cluster" ]]; then
-	./02splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+	./02splitsig.py temp/"$prefix"_padj.tsv.gz temp/"$prefix"_sig.tsv.gz temp/"$prefix"_nonsig.tsv.gz 
 elif [[ $location == "josh" ]]; then
-	python3 02splitsig.py temp/test_padj.tsv.gz temp/test_sig.tsv.gz temp/test_nonsig.tsv.gz 
+	python3 02splitsig.py temp/"$prefix"_padj.tsv.gz temp/"$prefix"_sig.tsv.gz temp/"$prefix"_nonsig.tsv.gz 
 fi
 
 # get most sig variants per gene
 echo
 echo "run 03topsig.py"
 if [[ $location == "cluster" ]]; then
-	./03topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	./03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_most_sig.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 03topsig.py temp/test_sig.tsv.gz temp/test_most_sig.tsv.gz
+	python3 03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_most_sig.tsv.gz
 fi
 
 
@@ -117,18 +115,18 @@ fi
 echo
 echo "run 04getposition.py on significant variants"
 if [[ $location == "cluster" ]]; then
-	./04getposition.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	./04getposition.py temp/"$prefix"_most_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 04getposition.py temp/test_most_sig.tsv.gz temp/test_positives.tsv.gz
+	python3 04getposition.py temp/"$prefix"_most_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
 fi
 
 # add positional info for non-sigs
 echo
 echo "run 04getposition.py on non-significant variants"
 if [[ $location == "cluster" ]]; then
-	./04getposition.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+	./04getposition.py temp/"$prefix"_nonsig.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 04getposition.py temp/test_nonsig.tsv.gz temp/test_nonsig_annotated.tsv.gz
+	python3 04getposition.py temp/"$prefix"_nonsig.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz
 fi
 
 
@@ -140,9 +138,9 @@ fi
 echo
 echo "run 05getnegatives.py"
 if [[ $location == "cluster" ]]; then
-	./05getnegatives.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+	./05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
 elif [[ $location == "josh" ]]; then
-	python3 05getnegatives.py temp/test_positives.tsv.gz temp/test_nonsig_annotated.tsv.gz temp/test_negatives.tsv.gz gene location variant
+	python3 05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
 fi
 
 
@@ -167,14 +165,22 @@ fi
 echo
 echo "run 06getsequences.py"
 if [[ $location == "cluster" ]]; then
-	./06getsequences.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 06getsequences.py temp/test_positives.tsv.gz temp/test_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
 fi
+
+
+# store result files in dedicated folder
+if [ ! -d "results/$prefix" ]; then
+	echo
+	mkdir "results/$prefix"
+fi
+mv "temp/"$prefix"_*" "results/"$prefix""
 
 echo
 echo "############################################"
-echo "finished for $test_file"
+echo "finished for $file"
 echo "############################################"
 echo
 echo
