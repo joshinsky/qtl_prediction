@@ -141,6 +141,7 @@ if [[ $location == "cluster" ]]; then
 	./05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
 elif [[ $location == "josh" ]]; then
 	python3 05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
+fi
 
 #######################
 ## add sequence data ##
