@@ -8,7 +8,7 @@ import seaborn as sns
 def load_and_inspect(file_path):
     """Loads the TSV file and prints basic information."""
     print(f"Loading data from {file_path}...")
-    df = pd.read_csv(file_path, sep='\t')
+    df = pd.read_csv(file_path, sep='\t', compression='gzip')
     
     print("\n--- Basic Information ---")
     print(df.info())
@@ -116,5 +116,5 @@ def main(file_path):
 
 # Run the EDA pipeline
 if __name__ == "__main__":
-    tsv_file = "results/test_seqs.tsv" 
+    tsv_file = sys.argv[1]
     eda_df = main(tsv_file)
