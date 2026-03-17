@@ -78,8 +78,11 @@ def get_seq(row, gene_ref, window=0):
 		sys.exit(1)
 
 	# get start and end indeces, correct for 1-based indexing in pyfaidx
-	start_idx = row['starts'] - 1 - window
-	stop_idx = row['ends'] + window
+	start = int(row['starts'])
+	stop = int(row['ends'])
+	chrom_len = len(gene_ref[chromosome])
+	start_idx = max(0, start - 1 - window)
+	stop_idx = min(chrom_len, end + window)
 
 	# extract sequence as plain string
 	sequence = gene_ref[chromosome][start_idx:stop_idx].seq
