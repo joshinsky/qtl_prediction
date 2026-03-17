@@ -157,17 +157,19 @@ if [ ! -f "data/GRCh38.primary_assembly.genome.fa.bgz.fai" ]; then
 		wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/GRCh38.primary_assembly.genome.fa.gz
 		cd ..
 	fi
-	echo
-	echo "converting reference genome to bgzip for pyfaidx to use."
-	gunzip -c data/GRCh38.primary_assembly.genome.fa.gz | bgzip > data/GRCh38.primary_assembly.genome.fa.bgz
+	if [ ! -f "data/GRCh38.primary_assembly.genome.fa.bgz" ]; then
+		echo
+		echo "converting reference genome to bgzip for pyfaidx to use."
+		gunzip -c data/GRCh38.primary_assembly.genome.fa.gz | bgzip > data/GRCh38.primary_assembly.genome.fa.bgz
+	fi
 fi
 
 echo
 echo "run 06getsequences.py"
 if [[ $location == "cluster" ]]; then
-	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/"$prefix"_seqs.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/test_seqs.tsv.gz
+	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/"$prefix"_seqs.tsv.gz
 fi
 
 
