@@ -175,7 +175,7 @@ fi
 if [ ! -d "results/$prefix" ]; then
 	mkdir "results/$prefix"
 fi
-mv "temp/"$prefix"_*" "results/"$prefix""
+mv "temp/"$prefix"_"* "results/"$prefix""
 
 echo
 echo "############################################"
