@@ -55,7 +55,7 @@ if [[ $test == "test" ]]; then
 else
 	echo
 	echo
-	echo "running pipeline for $file"
+	echo "running pipeline for $prefix"
 	echo
 	startfile=$file
 fi
@@ -182,7 +182,7 @@ mv "temp/"$prefix"_*" "results/"$prefix""
 
 echo
 echo "############################################"
-echo "finished for $file"
+echo "finished for $prefix"
 echo "############################################"
 echo
 echo
