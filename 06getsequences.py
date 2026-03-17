@@ -82,7 +82,7 @@ def get_seq(row, gene_ref, window=0):
 	stop = int(row['ends'])
 	chrom_len = len(gene_ref[chromosome])
 	start_idx = max(0, start - 1 - window)
-	stop_idx = min(chrom_len, end + window)
+	stop_idx = min(chrom_len, stop + window)
 
 	# extract sequence as plain string
 	sequence = gene_ref[chromosome][start_idx:stop_idx].seq
