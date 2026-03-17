@@ -51,7 +51,9 @@ if [[ $test == "test" ]]; then
 	echo "running test for $test_file on first 5 Mio. rows"
 	echo
 	gunzip -c $test_file | head -5000001 | gzip > temp/test_subset.tsv.gz
+	echo "subset 1"
 	startfile=temp/test_subset.tsv.gz
+	echo "subset 2"
 else
 	echo
 	echo
