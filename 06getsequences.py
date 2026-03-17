@@ -70,6 +70,7 @@ def get_seq(row, gene_ref, window=0):
 	"""
 
 	chromosome = row['chromosome']
+	print('is this an error?:',chromosome)
 	if chromosome not in gene_ref.keys():
 		print(f"error: reference does not contain chromosome '{chromosome}'.")
 		sys.exit(1)
@@ -107,6 +108,7 @@ negvar_df = pd.read_csv(neg_variant_filename, compression='gzip', sep='\t', low_
 
 # extract sequences and store in a new column
 print(f"extracting sequences...")
+print(posvar_df['chromosome'])
 posvar_df['variant_window'] = posvar_df.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
 negvar_df['variant_window'] = negvar_df.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
 

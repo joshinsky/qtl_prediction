@@ -40,8 +40,8 @@ for chunk in pd.read_csv(source_filename, compression='gzip', sep='\t', chunksiz
 			nsig_chunk.to_csv(nsig_destination, sep='\t', mode='w', header=True, compression='gzip', index=False)
 		first_chunk = False
 	else:
-		sig_chunk.to_csv(sig_destination, sep='\t', mode='a', header=True, compression='gzip', index=False)
-		nsig_chunk.to_csv(nsig_destination, sep='\t', mode='a', header=True, compression='gzip', index=False)
+		sig_chunk.to_csv(sig_destination, sep='\t', mode='a', header=False, compression='gzip', index=False)
+		nsig_chunk.to_csv(nsig_destination, sep='\t', mode='a', header=False, compression='gzip', index=False)
 
 
 # final message
