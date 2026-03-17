@@ -167,15 +167,14 @@ fi
 echo
 echo "run 06getsequences.py"
 if [[ $location == "cluster" ]]; then
-	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/"$prefix"_seqs.tsv.gz
+	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_seqs.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz results/"$prefix"_seqs.tsv.gz
+	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_seqs.tsv.gz
 fi
 
 
 # store result files in dedicated folder
 if [ ! -d "results/$prefix" ]; then
-	echo
 	mkdir "results/$prefix"
 fi
 mv "temp/"$prefix"_*" "results/"$prefix""
