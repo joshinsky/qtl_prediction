@@ -119,11 +119,45 @@ neg_df = neg_df.rename(columns=rename_dict)
 # restore the original column order
 neg_df = neg_df[nsig_df.columns]
 
-# store outout
+# # store outout
+
+# neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
+
+
+
+##############################################
+##   04 - Get random negatives              ##
+##   (random non‑sig not in related set)    ##
+##############################################
+
+print("sampling random negatives...")
+
+# keep only rows in nsig_df whose gene_id is not in neg_df
+neg2_df = nsig_df[~nsig_df["gene_id"].isin(neg_df["gene_id"])]
+
+
+# sample size n = number of positives
+n_positives = len(pos_df)
+if len(neg2_df) < n_positives:
+	print(f"Warning: only {len(neg2_df)} random candidates, using all of them.")
+	n_sample = len(neg2_df)
+else:
+	n_sample = n_positives
+
+# random sampling
+neg2_df = neg2_df.sample(n=n_sample, random_state=42, replace=False).reset_index(drop=True)
+
+# get full negative set
+neg_combined = pd.concat([neg_df, neg2_df], ignore_index=True)
+
+# store output
 print(f"storing results...")
-neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
+neg_combined.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
 total_time = time.time() - start_time
 print(f'finished after {total_time/60:.2f} minutes!') 
 print(f"results can be found at {destination_filename}\n")
+
+
+
 
