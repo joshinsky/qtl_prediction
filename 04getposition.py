@@ -2,6 +2,8 @@
 
 import os
 import sys
+import gzip
+import math
 import pandas as pd
 import numpy as np
 import genomicranges
@@ -42,16 +44,14 @@ except IndexError:
 def make_gr_from_df(df):
 	meta_df = df.drop(columns=["seqnames", "starts", "ends", "strand"], errors="ignore")
 	
-	# Explicitly cast to numeric numpy arrays to avoid any list or dtype weirdness
-	# We use errors='coerce' to turn any unexpected string junk into NaNs, 
-	# and fillna(0) to ensure the math doesn't crash on NaNs.
+	# get positional indeces as numpy arrays
 	starts_arr = pd.to_numeric(df["starts"], errors='coerce').fillna(0).to_numpy()
 	ends_arr = pd.to_numeric(df["ends"], errors='coerce').fillna(0).to_numpy()
 	
-	# Calculate width safely as pure numpy arrays
+	# Calculate width
 	raw_width = ends_arr - starts_arr + 1
 	
-	# Force any value < 1 to become 1 using numpy's clip
+	# Force any value < 1 to become 1
 	safe_width = np.clip(raw_width, a_min=1, a_max=None)
 	
 	gr = GenomicRanges(
@@ -82,86 +82,97 @@ else:
 	print("Saving to Parquet for faster loading next time...")
 	gtf_df.to_parquet(parquet_path, index=False)
 
-# load gene variant data
-print(f"loading variant data...")
-input_df = pd.read_csv(input_filename, compression='gzip', sep='\t', low_memory=False)
-
 # convert gene IDs to raw gene IDs without .1 or similar suffix
 gtf_df['base_gene_id'] = gtf_df['gene_id'].astype(str).str.split('.').str[0]
-input_df['base_gene_id'] = input_df['gene_id'].astype(str).str.split('.').str[0]
-
-# filter gtf genes only by target gene IDs
-print(f"extracting target genes...")
-target_gene_ids = input_df["base_gene_id"].tolist()
-mask = gtf_df["base_gene_id"].isin(target_gene_ids)
-target_gtf = gtf_df[mask]
-print(f"found {len(target_gtf)} entries for {len(input_df)} target genes (this includes genes, transcripts and exons).")
-
-# Extract the full gene boundaries and exonic regions then convert to gr objects
-print(f"retrieving positional indeces...")
-genes_df = target_gtf[target_gtf["feature"] == "gene"]
-exons_df = target_gtf[target_gtf["feature"] == "exon"]
-genes_gr = make_gr_from_df(genes_df)
-exons_gr = make_gr_from_df(exons_df)
-
-# make gr object from positive genes
-input_df = input_df.rename(columns={
-	"chromosome": "seqnames", 
-	"position": "starts"
-	})
-input_df["starts"] = pd.to_numeric(input_df["starts"], errors='coerce')
-input_df["seqnames"] = input_df["seqnames"].astype(str)
-input_df["seqnames"] = input_df["seqnames"].apply(lambda x: f"chr{x}" if not x.startswith("chr") else x)
-input_df["ends"] = input_df["starts"] + input_df["ref"].str.len() - 1
-variants_gr = make_gr_from_df(input_df)
 
 
 
-##############################
-## 03 - extract variant pos ##
-## (intrnc, exonc, intergnc)##
-##############################
+################################
+## 03 - make variant data     ##
+## gr object and get pos info ##
+################################
 
-# Calculate overlaps for both genes and exons
-print(f"classifying positional overlaps for each variant...")
-exon_counts = exons_gr.count_overlaps(variants_gr)
-gene_counts = genes_gr.count_overlaps(variants_gr)
+chunk_size = 5*10**6
+first_chunk = True
+total_variant_counts = pd.Series(dtype=int)
 
-# Loop through variant indeces and count exonic, intronic overlap
-classifications = []
-for e_count, g_count in zip(exon_counts, gene_counts):
-    if e_count > 0:
-        classifications.append("exonic")
-    elif g_count > 0:
-        classifications.append("intronic")
-    else:
-        classifications.append("intergenic")
+print(f"annotating variant positions (this may take a while)...")
 
-# Make column for resulting annotations
-input_df["variant_location"] = classifications
 
-# revert 'seqnames' column back to 'chromosome'
-input_df = input_df.rename(columns={"seqnames": "chromosome"})
-input_df = input_df.drop(columns=["base_gene_id"], errors='ignore')
+with gzip.open(destination_filename, 'wt') as outfile:
 
-# move 'ends' column behind 'starts'
-cols = list(input_df.columns)
-cols.remove("ends")
-starts_idx = cols.index("starts")
-cols.insert(starts_idx + 1, "ends")
-cols.remove("variant_location")
-starts_idx = cols.index("type")
-cols.insert(starts_idx + 1, "variant_location")
-input_df = input_df[cols]
+	for input_df in pd.read_csv(input_filename, compression='gzip', sep='\t', chunksize=chunk_size, low_memory=False):
+		
+		# convert gene IDs to raw gene IDs without .1 or similar suffix
+		input_df['base_gene_id'] = input_df['gene_id'].astype(str).str.split('.').str[0]
 
-# Save the final output
-print(f"saving results to {destination_filename}...")
-input_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
+		# filter gtf genes only by target gene IDs
+		target_gene_ids = input_df["base_gene_id"].tolist()
+		mask = gtf_df["base_gene_id"].isin(target_gene_ids)
+		target_gtf = gtf_df[mask]
 
-total_time = time.time() - start_time
-print(f'finished after {total_time/60:.2f} minutes!') 
-print(f"summary for {destination_filename}:")
-print(input_df["variant_location"].value_counts())
+		# Extract the full gene boundaries and exonic regions then convert to gr objects
+		genes_df = target_gtf[target_gtf["feature"] == "gene"]
+		exons_df = target_gtf[target_gtf["feature"] == "exon"]
+		genes_gr = make_gr_from_df(genes_df)
+		exons_gr = make_gr_from_df(exons_df)
+
+		# make gr object from positive genes
+		input_df = input_df.rename(columns={
+			"chromosome": "seqnames", 
+			"position": "starts"
+			})
+		input_df["starts"] = pd.to_numeric(input_df["starts"], errors='coerce')
+		input_df["seqnames"] = input_df["seqnames"].astype(str)
+		input_df["seqnames"] = input_df["seqnames"].apply(lambda x: f"chr{x}" if not x.startswith("chr") else x)
+		input_df["ends"] = input_df["starts"] + input_df["ref"].str.len() - 1
+		variants_gr = make_gr_from_df(input_df)
+
+		# Calculate overlaps for both genes and exons
+		exon_counts = exons_gr.count_overlaps(variants_gr)
+		gene_counts = genes_gr.count_overlaps(variants_gr)
+
+		# Loop through variant indeces and count exonic, intronic overlap
+		classifications = []
+		for e_count, g_count in zip(exon_counts, gene_counts):
+			if e_count > 0:
+				classifications.append("exonic")
+			elif g_count > 0:
+				classifications.append("intronic")
+			else:
+				classifications.append("intergenic")
+
+		# Store resulting annotations in own column
+		input_df["variant_location"] = classifications
+
+		# revert 'seqnames' column back to 'chromosome'
+		input_df = input_df.rename(columns={"seqnames": "chromosome"})
+		input_df = input_df.drop(columns=["base_gene_id"], errors='ignore')
+
+		# move 'ends' column behind 'starts'
+		cols = list(input_df.columns)
+		cols.remove("ends")
+		starts_idx = cols.index("starts")
+		cols.insert(starts_idx + 1, "ends")
+		cols.remove("variant_location")
+		starts_idx = cols.index("type")
+		cols.insert(starts_idx + 1, "variant_location")
+		input_df = input_df[cols]
+
+		# Keep track of statistics across all chunks
+		chunk_counts = input_df["variant_location"].value_counts()
+		total_variant_counts = total_variant_counts.add(chunk_counts, fill_value=0)
+
+		# save output to destination
+		if first_chunk and not input_df.empty:
+			input_df.to_csv(outfile, sep='\t', header=True, index=False)
+			first_chunk = False
+		elif not input_df.empty:
+			input_df.to_csv(outfile, sep='\t', header=False, index=False)
+
+
+total_time = time.time() - start_time 
+print(f"Finished!\n {total_variant_counts.astype(int)}\nVariants processed in {total_time/60:.2f} minutes!")
 print('')
 
 

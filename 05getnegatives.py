@@ -99,29 +99,27 @@ nsig_df = pd.read_csv(non_sig_filename, compression='gzip', sep='\t', low_memory
 
 # find negative candidates using an inner join with positives
 print(f"finding negative control candidates...")
-neg_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
+neg1_df = pd.merge(pos_df, nsig_df, how='inner', on=criteria_used)
 
 # warn the user if less negative controls were found than positives
-if len(neg_df.index) < len(pos_df.index):
+if len(neg1_df.index) < len(pos_df.index):
 	print("could not find negative control for all positive controls!")
-print(f"found {len(neg_df.index)} possible negatives for {len(pos_df.index)} positives.")
+print(f"found {len(neg1_df.index)} possible negatives for {len(pos_df.index)} positives.")
 
 # keep only the first gene in case of multiple perfect matches
 print(f"selecting negative controls...")
-neg_df = neg_df.drop_duplicates(subset=['gene_id'])
+neg1_df = neg1_df.drop_duplicates(subset=['gene_id'])
 
 # remove positive columns from negative set and remove _y suffix from negative df
-cols_to_drop = [col for col in neg_df.columns if col.endswith('_x')]
-neg_df = neg_df.drop(columns=cols_to_drop)
-rename_dict = {col: col[:-2] for col in neg_df.columns if col.endswith('_y')}
-neg_df = neg_df.rename(columns=rename_dict)
+cols_to_drop = [col for col in neg1_df.columns if col.endswith('_x')]
+neg1_df = neg1_df.drop(columns=cols_to_drop)
+rename_dict = {col: col[:-2] for col in neg1_df.columns if col.endswith('_y')}
+neg1_df = neg1_df.rename(columns=rename_dict)
 
-# restore the original column order
-neg_df = neg_df[nsig_df.columns]
-
-# # store outout
-
-# neg_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
+# restore the original column order and add column for sample type = similar negatives
+neg1_df = neg1_df[nsig_df.columns]
+neg1_df = neg1_df.copy()
+neg1_df["sample_type"] = "neg_sim"
 
 
 
@@ -132,27 +130,36 @@ neg_df = neg_df[nsig_df.columns]
 
 print("sampling random negatives...")
 
-# keep only rows in nsig_df whose gene_id is not in neg_df
-neg2_df = nsig_df[~nsig_df["gene_id"].isin(neg_df["gene_id"])]
+# keep only rows in nsig_df whose gene_id is not in neg1_df
+neg2_df = nsig_df[~nsig_df["gene_id"].isin(neg1_df["gene_id"])]
 
-
-# sample size n = number of positives
-n_positives = len(pos_df)
-if len(neg2_df) < n_positives:
+# to account for occasions where a positive sample was dropped because no matching negative was found
+# I set sample size n = number of similar negatives
+sample_size = len(neg1_df)
+if len(neg2_df) < sample_size:
 	print(f"Warning: only {len(neg2_df)} random candidates, using all of them.")
 	n_sample = len(neg2_df)
 else:
-	n_sample = n_positives
+	n_sample = sample_size
 
 # random sampling
 neg2_df = neg2_df.sample(n=n_sample, random_state=42, replace=False).reset_index(drop=True)
 
+# add column for sample type = random negatives
+neg2_df = neg2_df.copy()
+neg2_df["sample_type"] = "neg_rand"
+
+# keep only matched positives and add column for sample type = positive
+pos_df = pos_df[pos_df["gene_id"].isin(neg1_df["gene_id"])].copy()
+#pos_df = pos_df.copy()
+pos_df["sample_type"] = "pos"
+
 # get full negative set
-neg_combined = pd.concat([neg_df, neg2_df], ignore_index=True)
+final_combined = pd.concat([pos_df, neg1_df, neg2_df], ignore_index=True)
 
 # store output
 print(f"storing results...")
-neg_combined.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
+final_combined.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
 
 total_time = time.time() - start_time
 print(f'finished after {total_time/60:.2f} minutes!') 

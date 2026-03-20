@@ -2,6 +2,7 @@
 
 import os
 import sys
+import gzip
 import pandas as pd
 import numpy as np
 import time
@@ -17,7 +18,7 @@ start_time = time.time()
 # function explaining the program usage
 def usage():
 	print("program usage:")
-	print(f"python3 {sys.argv[0]} <positive_variant_filename> <negative_variant_filename> <reference_filename> <destination>")
+	print(f"python3 {sys.argv[0]} <variant_filename> <reference_filename> <destination>")
 	sys.exit(1)
 
 # get user input for filenames
@@ -26,17 +27,15 @@ if sys.argv[1] == 'help':
 
 # handle filenames
 try:
-	pos_variant_filename = sys.argv[1]
-	neg_variant_filename = sys.argv[2]
-	reference_filename = sys.argv[3]
-	destination_filename = sys.argv[4]
+	variant_filename = sys.argv[1]
+	reference_filename = sys.argv[2]
+	destination_filename = sys.argv[3]
 except IndexError:
 	print(f"I am missing a filename.")
 	usage()
-if not pos_variant_filename.endswith('.tsv.gz') or not neg_variant_filename.endswith('.tsv.gz') or not destination_filename.endswith('.tsv.gz'):
+if not variant_filename.endswith('.tsv.gz') or not destination_filename.endswith('.tsv.gz'):
 	print(f"Make sure that variant and destination are .tsv.gz format!")
-	print(f"\tpositives_filename = {pos_variant_filename}")
-	print(f"\tpositives_filename = {neg_variant_filename}")
+	print(f"\tvariant_filename = {variant_filename}")
 	print(f"\tdestination_filename = {destination_filename}")
 	usage()
 if not reference_filename.endswith('.fa.bgz'):
@@ -45,11 +44,8 @@ if not reference_filename.endswith('.fa.bgz'):
 	print(f"\tto convert .fa.gz to .fa.bgz you can run for example:")
 	print("\t\tgunzip -c data/GRCh38.primary_assembly.genome.fa.gz | bgzip > data/GRCh38.primary_assembly.genome.fa.bgz")
 	usage()
-if not os.path.exists(pos_variant_filename): 
-	print(f"{pos_variant_filename} was not found at specified location.")
-	sys.exit(1)
-elif not os.path.exists(neg_variant_filename): 
-	print(f"{neg_variant_filename} was not found at specified location.")
+if not os.path.exists(variant_filename): 
+	print(f"{variant_filename} was not found at specified location.")
 	sys.exit(1)
 elif not os.path.exists(reference_filename): 
 	print(f"{reference_filename} was not found at specified location.")
@@ -62,8 +58,7 @@ elif not os.path.exists(reference_filename):
 ##   02 - Get sequence str  ##
 ##############################
 
-
-# function to extract sequence
+# helper function to extract sequence window
 def get_seq(row, gene_ref, window=0):
 	"""	This function extracts the DNA sequence of a section on the chromosome using 
 		start and stop indeces.
@@ -93,28 +88,31 @@ def get_seq(row, gene_ref, window=0):
 	else:
 		return sequence
 
-
 # get reference sequences
 print(f"Reading genome reference...")
 if not os.path.exists(reference_filename+'.fai'):
 	print(f"storing indexed file {reference_filename+'.fai'} for later fast lookups.")
 all_genes = Fasta(reference_filename)
 
-# get variant file
-print(f"Reading variant files...")
-posvar_df = pd.read_csv(pos_variant_filename, compression='gzip', sep='\t', low_memory=False)
-negvar_df = pd.read_csv(neg_variant_filename, compression='gzip', sep='\t', low_memory=False)
+# open variant file in chunks, then annotate with sequence
+print(f"extracting sequence for each variant...")
+chunk_size = 10**6
+first_chunk = True
+with gzip.open(destination_filename, 'wt') as outfile:
+	
+	for df_chunk in pd.read_csv(variant_filename, compression='gzip', sep='\t', chunksize=chunk_size, low_memory=False):
+		
+		# extract sequences and store in a new column
+		df_chunk['variant_window'] = df_chunk.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
 
-# extract sequences and store in a new column
-print(f"extracting sequences...")
-posvar_df['variant_window'] = posvar_df.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
-negvar_df['variant_window'] = negvar_df.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
+		# write to .tsv.gz
+		if first_chunk and not df_chunk.empty:
+			df_chunk.to_csv(outfile, sep='\t', header=True, index=False)
+			first_chunk = False
+		elif not df_chunk.empty:
+			df_chunk.to_csv(outfile, sep='\t', header=False, index=False)
 
-# store as .tsv.gz
-print(f"storing results...")
-combined_df = pd.concat([posvar_df, negvar_df], ignore_index=True)
-combined_df.to_csv(destination_filename, sep='\t', index=False, compression='gzip')
-
+# final message
 total_time = time.time() - start_time
 print(f'finished after {total_time/60:.2f} minutes!') 
 print(f"results can be found at {destination_filename}\n")

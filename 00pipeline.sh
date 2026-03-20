@@ -92,9 +92,9 @@ fi
 echo
 echo "run 03topsig.py"
 if [[ $location == "cluster" ]]; then
-	./03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_most_sig.tsv.gz
+	./03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_most_sig.tsv.gz
+	python3 03topsig.py temp/"$prefix"_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
 fi
 
 
@@ -115,9 +115,9 @@ fi
 echo
 echo "run 04getposition.py on significant variants"
 if [[ $location == "cluster" ]]; then
-	./04getposition.py temp/"$prefix"_most_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
+	./04getposition.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_positives_annotated.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 04getposition.py temp/"$prefix"_most_sig.tsv.gz temp/"$prefix"_positives.tsv.gz
+	python3 04getposition.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_positives_annotated.tsv.gz
 fi
 
 # add positional info for non-sigs
@@ -138,9 +138,9 @@ fi
 echo
 echo "run 05getnegatives.py"
 if [[ $location == "cluster" ]]; then
-	./05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
+	./05getnegatives.py temp/"$prefix"_positives_annotated.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_data_noseq.tsv.gz gene location variant
 elif [[ $location == "josh" ]]; then
-	python3 05getnegatives.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_negatives.tsv.gz gene location variant
+	python3 05getnegatives.py temp/"$prefix"_positives_annotated.tsv.gz temp/"$prefix"_nonsig_annotated.tsv.gz temp/"$prefix"_data_noseq.tsv.gz gene location variant
 fi
 
 #######################
@@ -166,9 +166,9 @@ fi
 echo
 echo "run 06getsequences.py"
 if [[ $location == "cluster" ]]; then
-	./06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_seqs.tsv.gz
+	./06getsequences.py temp/"$prefix"_data_noseq.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_dataset.tsv.gz
 elif [[ $location == "josh" ]]; then
-	python3 06getsequences.py temp/"$prefix"_positives.tsv.gz temp/"$prefix"_negatives.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_seqs.tsv.gz
+	python3 06getsequences.py temp/"$prefix"_data_noseq.tsv.gz data/GRCh38.primary_assembly.genome.fa.bgz temp/"$prefix"_dataset.tsv.gz
 fi
 
 
