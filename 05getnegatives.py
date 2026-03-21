@@ -150,8 +150,8 @@ neg2_df = neg2_df.copy()
 neg2_df["sample_type"] = "neg_rand"
 
 # keep only matched positives and add column for sample type = positive
-pos_df = pos_df[pos_df["gene_id"].isin(neg1_df["gene_id"])].copy()
-#pos_df = pos_df.copy()
+#pos_df = pos_df[pos_df["gene_id"].isin(neg1_df["gene_id"])].copy()
+pos_df = pos_df.copy()
 pos_df["sample_type"] = "pos"
 
 # get full negative set

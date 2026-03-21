@@ -23,7 +23,7 @@
 
 #SBATCH --nodelist=node08
 
-# Array: 5 jobs
+# Array: 3 jobs
 #SBATCH --array=1-3
 
 # Output files:
