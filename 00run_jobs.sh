@@ -21,8 +21,10 @@
 # Partition:
 #SBATCH --partition=cpu
 
+#SBATCH --nodelist=node08
+
 # Array: 5 jobs
-#SBATCH --array=1-5
+#SBATCH --array=1-3
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/run-%A_%a.out

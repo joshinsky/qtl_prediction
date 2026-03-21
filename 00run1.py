@@ -49,30 +49,30 @@ studies = {
 	"GENCORD_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GENCORD/ge/GENCORD_ge_fibroblast.all.tsv.gz",
 	"GENCORD_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GENCORD/tx/GENCORD_tx_fibroblast.all.tsv.gz",
 	
-	# "GEUVADIS_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/ge/GEUVADIS_ge_LCL.all.tsv.gz",
-	# "GEUVADIS_tx":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/tx/GEUVADIS_tx_LCL.all.tsv.gz",
+	"GEUVADIS_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/ge/GEUVADIS_ge_LCL.all.tsv.gz",
+	"GEUVADIS_tx":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/tx/GEUVADIS_tx_LCL.all.tsv.gz",
 
-	# "HipSci_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/ge/HipSci_ge_iPSC.all.tsv.gz",
-	# "HipSci_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/tx/HipSci_tx_iPSC.all.tsv.gz",
+	"HipSci_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/ge/HipSci_ge_iPSC.all.tsv.gz",
+	"HipSci_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/tx/HipSci_tx_iPSC.all.tsv.gz",
 
-	# "Lepik_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/ge/Lepik_2017_ge_blood.all.tsv.gz",
-	# "Lepik_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/tx/Lepik_2017_tx_blood.all.tsv.gz",
+	"Lepik_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/ge/Lepik_2017_ge_blood.all.tsv.gz",
+	"Lepik_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/tx/Lepik_2017_tx_blood.all.tsv.gz",
 
-	# "Peng_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/ge/Peng_2018_ge_placenta_naive.all.tsv.gz",
-	# "Peng_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/tx/Peng_2018_tx_placenta_naive.all.tsv.gz",
+	"Peng_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/ge/Peng_2018_ge_placenta_naive.all.tsv.gz",
+	"Peng_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/tx/Peng_2018_tx_placenta_naive.all.tsv.gz",
 
-	# "ROSMAP_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/ge/ROSMAP_ge_brain_naive.all.tsv.gz",
-	# "ROSMAP_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/tx/ROSMAP_tx_brain_naive.all.tsv.gz",
+	"ROSMAP_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/ge/ROSMAP_ge_brain_naive.all.tsv.gz",
+	"ROSMAP_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/tx/ROSMAP_tx_brain_naive.all.tsv.gz",
 	
-	# "Schwartzentruber_ge":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/ge/Schwartzentruber_2018_ge_sensory_neuron.all.tsv.gz",
-	# "Schwartzentruber_iu":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/tx/Schwartzentruber_2018_tx_sensory_neuron.all.tsv.gz",
+	"Schwartzentruber_ge":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/ge/Schwartzentruber_2018_ge_sensory_neuron.all.tsv.gz",
+	"Schwartzentruber_iu":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/tx/Schwartzentruber_2018_tx_sensory_neuron.all.tsv.gz",
 	
-	# "Steinberg_1_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_high_grade_cartilage_naive.all.tsv.gz",
-	# "Steinberg_1_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_high_grade_cartilage_naive.all.tsv.gz",
-	# "Steinberg_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_low_grade_cartilage_naive.all.tsv.gz",
-	# "Steinberg_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_low_grade_cartilage_naive.all.tsv.gz",
-	# "Steinberg_3_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_synovium_naive.all.tsv.gz",
-	# "Steinberg_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_synovium_naive.all.tsv.gz",
+	"Steinberg_1_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_high_grade_cartilage_naive.all.tsv.gz",
+	"Steinberg_1_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_high_grade_cartilage_naive.all.tsv.gz",
+	"Steinberg_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_low_grade_cartilage_naive.all.tsv.gz",
+	"Steinberg_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_low_grade_cartilage_naive.all.tsv.gz",
+	"Steinberg_3_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_synovium_naive.all.tsv.gz",
+	"Steinberg_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_synovium_naive.all.tsv.gz",
 	
 	# "TwinsUK_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/ge/TwinsUK_ge_LCL.all.tsv.gz",
 	# "TwinsUK_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/tx/TwinsUK_tx_LCL.all.tsv.gz",
