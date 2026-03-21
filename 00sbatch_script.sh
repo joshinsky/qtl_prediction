@@ -33,7 +33,7 @@
 # -------------------------------------------------------------------------------------- #
 
 source /home/ctools/opt/anaconda-2025-12-2/bin/activate
-conda activate josh_env
+conda activate /net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env
 
 # -------------------------------------------------------------------------------------- #
 # Job Execution
@@ -43,9 +43,9 @@ conda activate josh_env
 cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
 
 echo "Initiating array task ${SLURM_ARRAY_TASK_ID}..."
-echo "Running script: run${SLURM_ARRAY_TASK_ID}.py"
+echo "Running script: 00run${SLURM_ARRAY_TASK_ID}.py"
 
 # Run the corresponding Python script based on the array ID
-/usr/bin/time -v python3 "run${SLURM_ARRAY_TASK_ID}.py"
+/usr/bin/time -v /net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python3 "00run${SLURM_ARRAY_TASK_ID}.py"
 
 echo "Finished array task ${SLURM_ARRAY_TASK_ID}."
