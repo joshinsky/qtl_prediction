@@ -5,23 +5,23 @@ import time
 start_time = time.time()
 
 studies = {
-	"Alasoo_1_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz",
-	"Alasoo_1_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_IFNg+Salmonella.all.tsv.gz",
-	"Alasoo_2_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg.all.tsv.gz",
-	"Alasoo_2_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_IFNg.all.tsv.gz",
-	"Alasoo_3_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_Salmonella.all.tsv.gz",
-	"Alasoo_3_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_Salmonella.all.tsv.gz",
-	"Alasoo_4_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_naive.all.tsv.gz",
-	"Alasoo_4_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_naive.all.tsv.gz",
+	# "Alasoo_1_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz",
+	# "Alasoo_1_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_IFNg+Salmonella.all.tsv.gz",
+	# "Alasoo_2_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg.all.tsv.gz",
+	# "Alasoo_2_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_IFNg.all.tsv.gz",
+	# "Alasoo_3_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_Salmonella.all.tsv.gz",
+	# "Alasoo_3_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_Salmonella.all.tsv.gz",
+	# "Alasoo_4_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_naive.all.tsv.gz",
+	# "Alasoo_4_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/tx/Alasoo_2018_tx_macrophage_naive.all.tsv.gz",
 
-	"BLUEPRINT_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_PE_ge_T-cell.all.tsv.gz",
-	"BLUEPRINT_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_PE_tx_T-cell.all.tsv.gz",
-	"BLUEPRINT_2_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_SE_ge_monocyte.all.tsv.gz",
-	"BLUEPRINT_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_SE_tx_monocyte.all.tsv.gz",
-	"BLUEPRINT_3_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_SE_ge_neutrophil.all.tsv.gz",
-	"BLUEPRINT_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_SE_tx_neutrophil.all.tsv.gz",
+	# "BLUEPRINT_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_PE_ge_T-cell.all.tsv.gz",
+	# "BLUEPRINT_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_PE_tx_T-cell.all.tsv.gz",
+	# "BLUEPRINT_2_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_SE_ge_monocyte.all.tsv.gz",
+	# "BLUEPRINT_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_SE_tx_monocyte.all.tsv.gz",
+	# "BLUEPRINT_3_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/ge/BLUEPRINT_SE_ge_neutrophil.all.tsv.gz",
+	# "BLUEPRINT_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_SE_tx_neutrophil.all.tsv.gz",
 	
-	"Bossini_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/ge/Bossini-Castillo_2019_ge_Treg_naive.all.tsv.gz",
+	# "Bossini_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/ge/Bossini-Castillo_2019_ge_Treg_naive.all.tsv.gz",
 	"Bossini_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/tx/Bossini-Castillo_2019_tx_Treg_naive.all.tsv.gz",
 	
 	"Braineaq2_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq2/ge/Braineac2_ge_putamen.all.tsv.gz",
