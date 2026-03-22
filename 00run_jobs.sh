@@ -16,7 +16,7 @@
 #SBATCH --mem=10G
 
 # Wall clock limit
-#SBATCH --time=24:00:00
+#SBATCH --time=200:00:00
 
 # Partition:
 #SBATCH --partition=cpu
