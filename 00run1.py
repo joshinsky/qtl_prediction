@@ -24,10 +24,10 @@ studies = {
 	# "Bossini_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/ge/Bossini-Castillo_2019_ge_Treg_naive.all.tsv.gz",
 	# "Bossini_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/tx/Bossini-Castillo_2019_tx_Treg_naive.all.tsv.gz",
 	
-	"Braineaq2_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/ge/Braineac2_ge_putamen.all.tsv.gz",
-	"Braineaq2_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/tx/Braineac2_tx_putamen.all.tsv.gz",
-	"Braineaq2_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/ge/Braineac2_ge_substantia_nigra.all.tsv.gz",
-	"Braineaq2_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/tx/Braineac2_tx_substantia_nigra.all.tsv.gz",
+	"Braineac2_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineac2/ge/Braineac2_ge_putamen.all.tsv.gz",
+	"Braineac2_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineac2/tx/Braineac2_tx_putamen.all.tsv.gz",
+	"Braineac2_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineac2/ge/Braineac2_ge_substantia_nigra.all.tsv.gz",
+	"Braineac2_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineac2/tx/Braineac2_tx_substantia_nigra.all.tsv.gz",
 	
 	"CAP_1_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/CAP/ge/CAP_ge_LCL_naive.all.tsv.gz",
 	"CAP_1_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/CAP/tx/CAP_tx_LCL_naive.all.tsv.gz",
