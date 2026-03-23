@@ -84,20 +84,20 @@ studies = {
 	# "TwinsUK_4_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/tx/TwinsUK_tx_skin.all.tsv.gz",
 	
 	# "Young_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/ge/Young_2019_ge_microglia_naive.all.tsv.gz",
-	"Young_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/tx/Young_2019_tx_microglia_naive.all.tsv.gz",
+	# "Young_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/tx/Young_2019_tx_microglia_naive.all.tsv.gz",
 	
-	"iPSCORE_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/ge/iPSCORE_ge_iPSC.all.tsv.gz",
-	"iPSCORE_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/tx/iPSCORE_tx_iPSC.all.tsv.gz",
+	# "iPSCORE_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/ge/iPSCORE_ge_iPSC.all.tsv.gz",
+	# "iPSCORE_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/tx/iPSCORE_tx_iPSC.all.tsv.gz",
 
-	"BrainSeq_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq/ge/BrainSeq_ge_brain.all.tsv.gz",
-	"BrainSeq_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq/tx/BrainSeq_tx_brain.all.tsv.gz",
+	# "BrainSeq_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq/ge/BrainSeq_ge_brain.all.tsv.gz",
+	# "BrainSeq_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq/tx/BrainSeq_tx_brain.all.tsv.gz",
 
-	"Nedelec_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_Listeria.all.tsv.gz",
-	"Nedelec_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_Listeria.all.tsv.gz",
-	"Nedelec_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_Salmonella.all.tsv.gz",
-	"Nedelec_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_Salmonella.all.tsv.gz",
-	"Nedelec_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_naive.all.tsv.gz",
-	"Nedelec_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_naive.all.tsv.gz",
+	# "Nedelec_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_Listeria.all.tsv.gz",
+	# "Nedelec_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_Listeria.all.tsv.gz",
+	# "Nedelec_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_Salmonella.all.tsv.gz",
+	# "Nedelec_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_Salmonella.all.tsv.gz",
+	# "Nedelec_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/ge/Nedelec_2016_ge_macrophage_naive.all.tsv.gz",
+	# "Nedelec_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Nedelec_2016/tx/Nedelec_2016_tx_macrophage_naive.all.tsv.gz",
 	
 	"PhLiPS_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/PhLiPS/ge/PhLiPS_ge_HLC.all.tsv.gz",
 	"PhLiPS_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/PhLiPS/tx/PhLiPS_tx_HLC.all.tsv.gz",
