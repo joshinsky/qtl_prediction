@@ -22,12 +22,12 @@ studies = {
 	# "BLUEPRINT_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BLUEPRINT/tx/BLUEPRINT_SE_tx_neutrophil.all.tsv.gz",
 	
 	# "Bossini_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/ge/Bossini-Castillo_2019_ge_Treg_naive.all.tsv.gz",
-	"Bossini_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/tx/Bossini-Castillo_2019_tx_Treg_naive.all.tsv.gz",
+	# "Bossini_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Bossini-Castillo_2019/tx/Bossini-Castillo_2019_tx_Treg_naive.all.tsv.gz",
 	
-	"Braineaq2_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq2/ge/Braineac2_ge_putamen.all.tsv.gz",
-	"Braineaq2_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq2/tx/Braineac2_tx_putamen.all.tsv.gz",
-	"Braineaq2_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq2/ge/Braineac2_ge_substantia_nigra.all.tsv.gz",
-	"Braineaq2_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/BrainSeq2/tx/Braineac2_tx_substantia_nigra.all.tsv.gz",
+	"Braineaq2_1_ge": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/ge/Braineac2_ge_putamen.all.tsv.gz",
+	"Braineaq2_1_iu": 	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/tx/Braineac2_tx_putamen.all.tsv.gz",
+	"Braineaq2_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/ge/Braineac2_ge_substantia_nigra.all.tsv.gz",
+	"Braineaq2_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Braineaq2/tx/Braineac2_tx_substantia_nigra.all.tsv.gz",
 	
 	"CAP_1_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/CAP/ge/CAP_ge_LCL_naive.all.tsv.gz",
 	"CAP_1_iu": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/CAP/tx/CAP_tx_LCL_naive.all.tsv.gz",
@@ -84,7 +84,7 @@ studies = {
 	# "TwinsUK_4_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/tx/TwinsUK_tx_skin.all.tsv.gz",
 	
 	# "Young_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/ge/Young_2019_ge_microglia_naive.all.tsv.gz",
-	# "Young_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/tx/Young_2019_ge_microglia_naive.all.tsv.gz",
+	# "Young_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Young_2019/tx/Young_2019_tx_microglia_naive.all.tsv.gz",
 	
 	# "iPSCORE_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/ge/iPSCORE_ge_iPSC.all.tsv.gz",
 	# "iPSCORE_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/iPSCORE/tx/iPSCORE_tx_iPSC.all.tsv.gz",
