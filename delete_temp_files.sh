@@ -12,6 +12,6 @@ echo "Keeping ONLY files ending in '_dataset.tsv.gz'"
 # 3. EXCLUDE files ending in _dataset.tsv.gz (! -name "*_dataset.tsv.gz")
 # 4. Delete the matches it finds (-delete)
 
-find . -type f ! -name "*_dataset.tsv.gz" -print # -delete
+find . -type f ! -name "*_dataset.tsv.gz" -print -delete
 
 echo "Cleanup complete! All intermediate files have been removed."
