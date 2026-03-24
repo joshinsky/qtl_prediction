@@ -1,8 +1,7 @@
 #!/net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python3
 
 import subprocess
-import time
-start_time = time.time()
+import os
 
 studies = {
 	# "Alasoo_1_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Alasoo_2018/ge/Alasoo_2018_ge_macrophage_IFNg+Salmonella.all.tsv.gz",
