@@ -135,14 +135,28 @@ studies = {
     "GTEx_49_iu":       "/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_vagina.all.tsv.gz"
 }
 
+study_count = len(studies)
+i = 1
+
 for prefix, filepath in studies.items():
-    # Define what the very last file your pipeline produces is called
-    final_output = f"temp/{prefix}_dataset.tsv" 
+    print(f"######################")
+    print(f"Study {i}/{study_count} : {prefix}")
+    print(f"######################")
+    
+    # Check if the final file exists in the results folder
+    final_output = f"results/{prefix}/{prefix}_dataset.tsv.gz"
     
     if os.path.exists(final_output):
-        print(f"Skipping {prefix}: Already successfully processed.")
+        print(f"--> SKIPPING: {prefix} already successfully completed.\n")
+        i += 1
         continue
         
-    print(f"Running pipeline for {prefix}...")
-    # Notice we set check=False so if a bad file throws an error, it just moves to the next study
+    print(f"--> RUNNING pipeline for {prefix}...")
+    
+    # We use check=False so if a bad gzip file crashes 01adjpv.py, 
+    # it won't crash this python script. It will just move to the next study.
     subprocess.run(f"./00pipeline.sh cluster {filepath} {prefix}", shell=True, capture_output=False, check=False)
+    i += 1
+
+total_time = time.time() - start_time
+print(f"\n\n{30*'#'}\nFinished cleanup run in {total_time/60:.2f} minutes!\n{30*'#'}")
