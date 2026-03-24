@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=1
 
 # Memory for the job
-#SBATCH --mem=10G
+#SBATCH --mem=20G
 
 # Wall clock limit
 #SBATCH --time=200:00:00

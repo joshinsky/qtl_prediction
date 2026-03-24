@@ -48,32 +48,34 @@ studies = {
 	"GENCORD_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GENCORD/tx/GENCORD_tx_T-cell.all.tsv.gz",
 	"GENCORD_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GENCORD/ge/GENCORD_ge_fibroblast.all.tsv.gz",
 	"GENCORD_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GENCORD/tx/GENCORD_tx_fibroblast.all.tsv.gz",
-	
 	"GEUVADIS_ge": 		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/ge/GEUVADIS_ge_LCL.all.tsv.gz",
 	"GEUVADIS_tx":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GEUVADIS/tx/GEUVADIS_tx_LCL.all.tsv.gz",
-
 	"HipSci_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/ge/HipSci_ge_iPSC.all.tsv.gz",
 	"HipSci_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/HipSci/tx/HipSci_tx_iPSC.all.tsv.gz",
-
 	"Lepik_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/ge/Lepik_2017_ge_blood.all.tsv.gz",
 	"Lepik_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Lepik_2017/tx/Lepik_2017_tx_blood.all.tsv.gz",
-
 	"Peng_ge":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/ge/Peng_2018_ge_placenta_naive.all.tsv.gz",
 	"Peng_iu":			"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Peng_2018/tx/Peng_2018_tx_placenta_naive.all.tsv.gz",
-
 	"ROSMAP_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/ge/ROSMAP_ge_brain_naive.all.tsv.gz",
 	"ROSMAP_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/ROSMAP/tx/ROSMAP_tx_brain_naive.all.tsv.gz",
-	
 	"Schwartzentruber_ge":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/ge/Schwartzentruber_2018_ge_sensory_neuron.all.tsv.gz",
 	"Schwartzentruber_iu":"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schwartzentruber_2018/tx/Schwartzentruber_2018_tx_sensory_neuron.all.tsv.gz",
-	
 	"Steinberg_1_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_high_grade_cartilage_naive.all.tsv.gz",
 	"Steinberg_1_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_high_grade_cartilage_naive.all.tsv.gz",
 	"Steinberg_2_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_low_grade_cartilage_naive.all.tsv.gz",
 	"Steinberg_2_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_low_grade_cartilage_naive.all.tsv.gz",
 	"Steinberg_3_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/ge/Steinberg_2020_ge_synovium_naive.all.tsv.gz",
 	"Steinberg_3_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Steinberg_2020/tx/Steinberg_2020_tx_synovium_naive.all.tsv.gz",
-	
+	"Quach_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_IAV.all.tsv.gz",
+	"Quach_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_IAV.all.tsv.gz",
+	"Quach_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_LPS.all.tsv.gz",
+	"Quach_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_LPS.all.tsv.gz",
+	"Quach_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_Pam3CSK4.all.tsv.gz",
+	"Quach_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_Pam3CSK4.all.tsv.gz",
+	"Quach_4_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_R848.all.tsv.gz",
+	"Quach_4_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_R848.all.tsv.gz",
+	"Quach_5_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_naive.all.tsv.gz",
+	"Quach_5_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_naive.all.tsv.gz",
 	# "TwinsUK_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/ge/TwinsUK_ge_LCL.all.tsv.gz",
 	# "TwinsUK_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/tx/TwinsUK_tx_LCL.all.tsv.gz",
 	# "TwinsUK_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/TwinsUK/ge/TwinsUK_ge_blood.all.tsv.gz",
@@ -104,16 +106,6 @@ studies = {
 	# "PhLiPS_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/PhLiPS/ge/PhLiPS_ge_iPSC.all.tsv.gz",
 	# "PhLiPS_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/PhLiPS/tx/PhLiPS_tx_iPSC.all.tsv.gz",
 
-	# "Quach_1_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_IAV.all.tsv.gz",
-	# "Quach_1_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_IAV.all.tsv.gz",
-	# "Quach_2_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_LPS.all.tsv.gz",
-	# "Quach_2_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_LPS.all.tsv.gz",
-	# "Quach_3_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_Pam3CSK4.all.tsv.gz",
-	# "Quach_3_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_Pam3CSK4.all.tsv.gz",
-	# "Quach_4_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_R848.all.tsv.gz",
-	# "Quach_4_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_R848.all.tsv.gz",
-	# "Quach_5_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/ge/Quach_2016_ge_monocyte_naive.all.tsv.gz",
-	# "Quach_5_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Quach_2016/tx/Quach_2016_tx_monocyte_naive.all.tsv.gz",
 
 	# "Schmiedel_1_ge":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schmiedel_2018/ge/Schmiedel_2018_ge_B-cell_naive.all.tsv.gz",
 	# "Schmiedel_1_iu":	"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/Schmiedel_2018/tx/Schmiedel_2018_tx_B-cell_naive.all.tsv.gz",
@@ -232,37 +224,42 @@ studies = {
 	# "GTEx_42_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_skin_sun_exposed.all.tsv.gz",
 	# "GTEx_43_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_small_intestine.all.tsv.gz",
 	# "GTEx_43_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_small_intestine.all.tsv.gz",
-	# "GTEx_44_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_spleen.all.tsv.gz",
-	# "GTEx_44_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_spleen.all.tsv.gz",
-	# "GTEx_45_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_stomach.all.tsv.gz",
-	# "GTEx_45_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_stomach.all.tsv.gz",
-	# "GTEx_46_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_testis.all.tsv.gz",
-	# "GTEx_46_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_testis.all.tsv.gz",
-	# "GTEx_47_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_thyroid.all.tsv.gz",
-	# "GTEx_47_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_thyroid.all.tsv.gz",
-	# "GTEx_48_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_uterus.all.tsv.gz",
-	# "GTEx_48_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_uterus.all.tsv.gz",
-	# "GTEx_49_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_vagina.all.tsv.gz",
-	# "GTEx_49_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_vagina.all.tsv.gz"
+	"GTEx_44_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_spleen.all.tsv.gz",
+	"GTEx_44_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_spleen.all.tsv.gz",
+	"GTEx_45_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_stomach.all.tsv.gz",
+	"GTEx_45_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_stomach.all.tsv.gz",
+	"GTEx_46_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_testis.all.tsv.gz",
+	"GTEx_46_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_testis.all.tsv.gz",
+	"GTEx_47_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_thyroid.all.tsv.gz",
+	"GTEx_47_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_thyroid.all.tsv.gz",
+	"GTEx_48_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_uterus.all.tsv.gz",
+	"GTEx_48_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_uterus.all.tsv.gz",
+	"GTEx_49_ge":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/ge/GTEx_ge_vagina.all.tsv.gz",
+	"GTEx_49_iu":		"/home/local/databases/ebi_eqtl_catalogue/pub/databases/spot/eQTL/sumstats/GTEx/tx/GTEx_tx_vagina.all.tsv.gz"
 }
 
 study_count = len(studies)
 i = 1
+
 for prefix, filepath in studies.items():
-	print( "######################")
-	print(f"Study {i}/{study_count}")
-	print( "######################")
-	subprocess.run(f"./00pipeline.sh cluster {filepath} {prefix}", shell=True, capture_output=False, check=True)
-	i += 1
+    print(f"######################")
+    print(f"Study {i}/{study_count} : {prefix}")
+    print(f"######################")
+    
+    # Check if the final file exists in the results folder
+    final_output = f"results/{prefix}/{prefix}_dataset.tsv.gz"
+    
+    if os.path.exists(final_output):
+        print(f"--> SKIPPING: {prefix} already successfully completed.\n")
+        i += 1
+        continue
+        
+    print(f"--> RUNNING pipeline for {prefix}...")
+    
+    # We use check=False so if a bad gzip file crashes 01adjpv.py, 
+    # it won't crash this python script. It will just move to the next study.
+    subprocess.run(f"./00pipeline.sh cluster {filepath} {prefix}", shell=True, capture_output=False, check=False)
+    i += 1
 
-# runtime calculation
 total_time = time.time() - start_time
-print(f"\n\n{30*'#'}\nfinished running pipeline on {study_count} studies in {total_time/60:.2f} minutes!\n{30*'#'}")
-
-
-
-
-
-
-
-
+print(f"\n\n{30*'#'}\nFinished cleanup run in {total_time/60:.2f} minutes!\n{30*'#'}")
