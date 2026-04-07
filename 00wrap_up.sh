@@ -10,10 +10,4 @@ set -euo pipefail
 
 cd /home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction
 
-source /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/etc/profile.d/conda.sh
-conda activate /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env
-
-which python
-python --version
-
-python 00run1.py
+/net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python 00run1.py
