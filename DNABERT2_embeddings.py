@@ -9,6 +9,8 @@ import numpy as np
 import os
 import psutil
 from huggingface_hub import hf_hub_download
+from transformers.models.bert.configuration_bert import BertConfig
+
 
 start_time = time.time()
 
