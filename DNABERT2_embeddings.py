@@ -37,7 +37,7 @@ model = model.to(device)
 model.eval()
 
 print("\nCreating embeddings...")
-max_length = 64
+max_length = 64     # investigate that if it's truncating, until next meeting
 batch_size = 1000
 all_mean_embeddings = []
 
@@ -53,7 +53,7 @@ with torch.no_grad():
         # compute embeddings
         outputs = model(input_ids, attention_mask=attention_mask)
         
-        embeddings = outputs.last_hidden_state
+        embeddings = outputs[0]
         
         # Expand mask for math operations
         mask_expanded = attention_mask.unsqueeze(-1)
