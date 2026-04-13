@@ -15,7 +15,7 @@ if len(sys.argv) < 3:
 
 dataset = sys.argv[1]
 model_path = sys.argv[2]
-k = int(sys.argv[3]) if len(sys.argv) > 3 else 6
+k = 6
 
 source_filename = f"results/{dataset}/{dataset}_dataset.tsv.gz"
 seq_df = pd.read_csv(
