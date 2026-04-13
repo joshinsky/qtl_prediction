@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=dnabert2_embed
+#SBATCH --job-name=dnabert1_embed
 
 # Request nodes:
 #SBATCH --nodelist=node08
@@ -25,8 +25,8 @@
 #SBATCH --array=0-215%5
 
 # Output files:
-#SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-%A_%a.out
-#SBATCH --error=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-%A_%a.err
+#SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert1-%A_%a.out
+#SBATCH --error=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert1-%A_%a.err
 
 set -euo pipefail
 
