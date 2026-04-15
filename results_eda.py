@@ -99,9 +99,13 @@ def analyze_variants(filepath):
     axes[1,1].set_ylabel('Variant Count')
     
     plt.tight_layout()
-    plt.savefig('variant_eda_dashboard.png', dpi=300)
-    print("\nPlots saved to 'variant_eda_dashboard.png'")
+    if filepath == "results/ge_dataset.tsv.gz":
+    	plt.savefig(f'figures/ge_variant_eda_dashboard.png', dpi=300)
+    elif filepath == "results/iu_dataset.tsv.gz":
+	plt.savefig(f'figures/iu_variant_eda_dashboard.png', dpi=300)
+    print(f"\nPlots saved to 'figures/ge_iu_variant_eda_dashboard.png'")
 
 if __name__ == "__main__":
     # Point this to your actual file
-    analyze_variants("ge_dataset.tsv.gz")
+    analyze_variants("results/ge_dataset.tsv.gz")
+    analyze_variants("results/iu_dataset.tsv.gz")
