@@ -63,6 +63,6 @@ echo "SLURM_ARRAY_TASK_ID=${SLURM_ARRAY_TASK_ID}"
 echo "DATASET=${DATASET}"
 echo "START=$(date)"
 
-/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATASET}"
+/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATASET}" "zhihan1996/DNA_bert_6"
 
 echo "END=$(date)"
