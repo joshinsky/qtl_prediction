@@ -1,1 +1,0 @@
-find . -name "*_dataset.tsv.gz" -exec sh -c 'for f; do lines=$(zcat "$f" | wc -l); echo -e "$f\t$lines"; done' sh {} + | tee overview.tsv | awk '{total+=$2; count++} END {print "Total lines minus files: " total - count}'
