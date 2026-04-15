@@ -100,9 +100,9 @@ def analyze_variants(filepath):
     
     plt.tight_layout()
     if filepath == "results/ge_dataset.tsv.gz":
-    	plt.savefig(f'figures/ge_variant_eda_dashboard.png', dpi=300)
+        plt.savefig(f'figures/ge_variant_eda_dashboard.png', dpi=300)
     elif filepath == "results/iu_dataset.tsv.gz":
-	plt.savefig(f'figures/iu_variant_eda_dashboard.png', dpi=300)
+	    plt.savefig(f'figures/iu_variant_eda_dashboard.png', dpi=300)
     print(f"\nPlots saved to 'figures/ge_iu_variant_eda_dashboard.png'")
 
 if __name__ == "__main__":
