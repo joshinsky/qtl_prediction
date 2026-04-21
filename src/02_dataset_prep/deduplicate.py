@@ -24,4 +24,5 @@ df_meta = df_combined.drop_duplicates(subset=['variant'], keep='first')
 df_meta = df_meta.drop(columns=['significant'])
 df_final = pd.merge(df_meta, df_sig_labels, on='variant', how='inner')
 
+# store deduplicated df
 df_final.to_csv("../../data/training_dataset/full_dataset_deduplicated.tsv.gz", compression="gzip", sep='\t', header=True, index=False)
