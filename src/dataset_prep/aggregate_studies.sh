@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Define the output file name
-OUTPUT_FILE="ge_dataset.tsv.gz"
+OUTPUT_FILE="iu_dataset.tsv.gz"
 
 # Find all matching files and store them in an array
 cd results/output/sequence_extraction
-mapfile -t FILES < <(find . -type f -name "*ge_dataset.tsv.gz")
+mapfile -t FILES < <(find . -type f -name "*iu_dataset.tsv.gz")
 
 # Check if any files were found
 if [ ${#FILES[@]} -eq 0 ]; then
-    echo "No *ge_dataset.tsv.gz files found!"
+    echo "No *iu_dataset.tsv.gz files found!"
     exit 1
 fi
 
