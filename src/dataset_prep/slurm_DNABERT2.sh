@@ -7,9 +7,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1 
 
-# Request nodes:
-#SBATCH --nodelist=node08
-
 # Processors per task:
 #SBATCH --ntasks=1
 
