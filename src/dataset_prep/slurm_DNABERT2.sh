@@ -7,7 +7,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1 
 
-
 # Request nodes:
 #SBATCH --nodelist=node08
 
