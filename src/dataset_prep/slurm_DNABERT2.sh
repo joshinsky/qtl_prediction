@@ -3,6 +3,11 @@
 # Job name:
 #SBATCH --job-name=dnabert2_embed
 
+# Partition:
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1 
+
+
 # Request nodes:
 #SBATCH --nodelist=node08
 
@@ -10,19 +15,13 @@
 #SBATCH --ntasks=1
 
 # CPUs per task:
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=4
 
 # Memory for the job
-#SBATCH --mem=10G
+#SBATCH --mem=16G
 
 # Wall clock limit:
 #SBATCH --time=200:00:00
-
-# Partition:
-#SBATCH --partition=cpu
-
-# Array: 216 jobs (0-215), max 5 running at once
-#SBATCH --array=0-215%5
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-%A_%a.out
@@ -42,27 +41,13 @@ conda activate /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/repo
 # -------------------------------------------------------------------------------------- #
 
 PROJECT_DIR="/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
-SCRIPT_PATH="${PROJECT_DIR}/DNABERT2_embeddings.py"
-DATASET_LIST="${PROJECT_DIR}/all_studies.txt"
+SCRIPT_PATH="${PROJECT_DIR}/src/dataset_prep/DNABERT2_embeddings.py"
+DATA_PATH="${PROJECT_DIR}/results/output/dataset_prep/full_dataset_deduplicated.tsv.gz"
 
 cd "${PROJECT_DIR}"
-
-DATASET=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" "${DATASET_LIST}")
-
-if [[ -z "${DATASET}" ]]; then
-    echo "No dataset found for task ${SLURM_ARRAY_TASK_ID}"
-    exit 1
-fi
 
 # -------------------------------------------------------------------------------------- #
 # Job
 # -------------------------------------------------------------------------------------- #
 
-echo "SLURM_JOB_ID=${SLURM_JOB_ID}"
-echo "SLURM_ARRAY_TASK_ID=${SLURM_ARRAY_TASK_ID}"
-echo "DATASET=${DATASET}"
-echo "START=$(date)"
-
-/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATASET}"
-
-echo "END=$(date)"
+/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATA_PATH}"
