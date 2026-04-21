@@ -1,4 +1,4 @@
-#!/net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python3
+#!/net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/repo/dnaLM/conda_env/dnaLM python3
 
 import pandas as pd
 import h5py
@@ -20,7 +20,7 @@ mask = (df['chromosome'] == 'chr1') | (df['chromosome'] == 'chr19') | (df['chrom
 test_df = df[mask]
 
 # store hold-out testset
-output_seqs = "results/output/dataset_prep/holdout_dataset.tsv.gz"
+output_seqs = "results/output/classifier/holdout_dataset.tsv.gz"
 test_df.to_csv(output_seqs, compression="gzip", sep='\t', header=True, index=False)
 
 # get corresponding embeddings
@@ -29,21 +29,20 @@ print("\nExtracting corresponding embeddings...")
 # use indeces from testset
 test_indices = sorted(test_df.index.tolist())
 input_h5 = "results/output/dataset_prep/embeddings_DNABERT2.h5"
-output_h5 = "results/output/dataset_prep/holdout_embeddings.h5"
+output_h5 = "results/output/classifier/holdout_embeddings.h5"
 
 with h5py.File(input_h5, 'r') as h5_in, h5py.File(output_h5, 'w') as h5_out:
 
 	# create dataset of testsize x embedding length
 	dataset_in = h5_in['embeddings']
 	dataset_out = h5_out.create_dataset(
-        "embeddings", 
-        shape=(len(test_indices), 768), 
-        dtype='float32',
-        compression="gzip"
-    )
+		"embeddings", 
+		shape=(len(test_indices), 768), 
+		dtype='float32',
+		compression="gzip")
 
 	# extract correct embeddings
-    dataset_out[:] = dataset_in[test_indices]
+	dataset_out[:] = dataset_in[test_indices]
 
 print(f"Successfully saved {len(test_indices)} embeddings to {output_h5}")
 
