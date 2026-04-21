@@ -3,8 +3,8 @@
 import pandas as pd
 
 # load ge and iu datasets
-df_ge = pd.read_csv("../../data/training_dataset/ge_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
-df_iu = pd.read_csv("../../data/training_dataset/iu_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+df_ge = pd.read_csv("results/output/dataset_prep/ge_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+df_iu = pd.read_csv("results/output/dataset_prep/iu_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
 
 # find out if a variant was significant at least once in the dataset
 sig_ge = df_ge.groupby('variant')['significant'].max().rename('sig_ge')
@@ -25,4 +25,4 @@ df_meta = df_meta.drop(columns=['significant'])
 df_final = pd.merge(df_meta, df_sig_labels, on='variant', how='inner')
 
 # store deduplicated df
-df_final.to_csv("../../data/training_dataset/full_dataset_deduplicated.tsv.gz", compression="gzip", sep='\t', header=True, index=False)
+df_final.to_csv("results/output/dataset_prep/full_dataset_deduplicated.tsv.gz", compression="gzip", sep='\t', header=True, index=False)
