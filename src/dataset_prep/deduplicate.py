@@ -11,9 +11,11 @@ df_iu = pd.read_csv("results/output/dataset_prep/iu_dataset.tsv.gz", compression
 print('sorting out which was significant where')
 sig_ge = df_ge.groupby('variant')['significant'].max().rename('sig_ge')
 sig_iu = df_iu.groupby('variant')['significant'].max().rename('sig_iu')
+
+# combine them into a df with two columns with 'variant' as idx
 df_sig_labels = pd.concat([sig_ge, sig_iu], axis=1).fillna(0).astype(int).reset_index()
 
-# combine dfs and drop "non_significant" column as it is redundant
+# combine ge_df and iu_df and drop "non_significant" column as it is redundant
 df_combined = pd.concat([df_ge, df_iu], ignore_index=True)
 if "non_significant" in df_combined.columns:
     df_combined = df_combined.drop(columns=["non_significant"])
