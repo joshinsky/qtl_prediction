@@ -9,20 +9,14 @@ def store_split(split_df, tsv_output_path, h5_output_path, source_h5_path):
     
 	print(f"\nProcessing split saving to: {tsv_output_path}")
 
-	# store sequence-data df
 	split_df.to_csv(tsv_output_path, compression="gzip", sep='\t', header=True, index=False)
 
 	# store embeddings using seq-frame indeces
 	indices = sorted(split_df.index.tolist())
 	print(f"Extracting {len(indices)} corresponding embeddings...")
 	with h5py.File(source_h5_path, 'r') as h5_in, h5py.File(h5_output_path, 'w') as h5_out:
-
 		dataset_in = h5_in['embeddings']
-		dataset_out = h5_out.create_dataset(
-			"embeddings", 
-			shape=(len(indices), 768), 
-			dtype='float32',
-			compression="gzip")
+		dataset_out = h5_out.create_dataset("embeddings", shape=(len(indices), 768), dtype='float32', compression="gzip")
 		dataset_out[:] = dataset_in[indices]
 
 	print(f"Successfully saved embeddings to {h5_output_path}")
@@ -67,6 +61,8 @@ if not os.path.exists(output_test_h5) or not os.path.exists(output_test_seqs):
 if not os.path.exists(output_train_val_h5) or not os.path.exists(output_train_val_seqs):
 	store_split(train_val_df, output_train_val_seqs, output_train_val_h5, input_h5)
 
+# reset index so val/train splits index correctly into train_and_validation_dataset.h5
+train_val_df = train_val_df.reset_index(drop=True)
 
 # look at the data distribution in the set for training + validation
 print("\ndistribution data for train+val subset:")
