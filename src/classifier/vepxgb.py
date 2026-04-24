@@ -29,7 +29,7 @@ y_val = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", useco
 # scale X_train
 sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
-X_val = sc.fit_transform(X_val)
+X_val = sc.transform(X_val)
 
 # Fit PCA on training data
 n_components = 100
