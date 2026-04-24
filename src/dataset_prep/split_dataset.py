@@ -50,9 +50,9 @@ get_chr_distribution(df_full)
 
 # chr1, chr19 and chr8 roughly add up to 0.2, so let's hold those out
 print("\nI will hold out chr1, chr19, and chr8 for a testset-size of 19.97%")
-test_mask = (df['chromosome'] == 'chr1') | (df['chromosome'] == 'chr19') | (df['chromosome'] == 'chr8')
-test_df = df[test_mask]
-train_val_df = df[~test_mask]
+test_mask = (df_full['chromosome'] == 'chr1') | (df_full['chromosome'] == 'chr19') | (df_full['chromosome'] == 'chr8')
+test_df = df_full[test_mask]
+train_val_df = df_full[~test_mask]
 
 # define all directories and perform hold-out
 # output_test_seqs = "results/output/classifier/test_dataset.tsv.gz"
