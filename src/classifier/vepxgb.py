@@ -32,7 +32,7 @@ X_train = sc.fit_transform(X_train)
 X_val = sc.transform(X_val)
 
 # Fit PCA on training data
-n_components = 100
+n_components = 200
 pca = PCA(n_components=n_components, random_state=42)
 X_train_pca = pca.fit_transform(X_train)
 X_val_pca = pca.transform(X_val)
