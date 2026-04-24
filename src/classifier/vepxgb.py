@@ -40,6 +40,6 @@ X_train_pca = pca.fit_transform(X_train)
 X_val_pca = pca.transform(X_val)
 
 explained_variance = pca.explained_variance_ratio_.sum()
-
 print(f"Total explained variance by {n_components} PCs: {explained_variance:.4f}")
+
 

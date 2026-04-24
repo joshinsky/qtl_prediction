@@ -2,6 +2,7 @@
 
 import pandas as pd
 import h5py
+import os
 
 
 def store_split(split_df, tsv_output_path, h5_output_path, source_h5_path):
@@ -61,8 +62,10 @@ input_h5 = "results/output/dataset_prep/embeddings_DNABERT2.h5"
 output_test_h5 = "results/output/classifier/test_embeddings.h5"
 output_train_val_h5 = "results/output/classifier/train_and_validation_dataset.h5"
 
-store_split(test_df, output_test_seqs, output_test_h5, input_h5)
-store_split(train_val_df, output_train_val_seqs, output_train_val_h5, input_h5)
+if not os.path.exists(output_test_h5) or not os.path.exists(output_test_seqs):
+	store_split(test_df, output_test_seqs, output_test_h5, input_h5)
+if not os.path.exists(output_train_val_h5) or not os.path.exists(output_train_val_seqs):
+	store_split(train_val_df, output_train_val_seqs, output_train_val_h5, input_h5)
 
 
 # look at the data distribution in the set for training + validation
@@ -72,8 +75,8 @@ get_chr_distribution(train_val_df)
 
 print("\nI will hold out chr2, chr5, and chr16 for a validation set-size of 20,01%")
 val_mask = (train_val_df['chromosome'] == 'chr2') | (train_val_df['chromosome'] == 'chr5') | (train_val_df['chromosome'] == 'chr16')
-val_df = df[val_mask]
-train_df = df[~val_mask]
+val_df = train_val_df[val_mask]
+train_df = train_val_df[~val_mask]
 
 # # define all directories and perform train-validation split
 output_val_seqs = "results/output/classifier/validation_dataset.tsv.gz"
@@ -81,8 +84,10 @@ output_train_seqs = "results/output/classifier/train_dataset.tsv.gz"
 output_val_h5 = "results/output/classifier/validation_embeddings.h5"
 output_train_h5 = "results/output/classifier/train_embeddings.h5"
 
-store_split(val_df, output_val_seqs, output_val_h5, output_train_val_h5)
-store_split(train_df, output_train_seqs, output_train_h5, output_train_val_h5)
+if not os.path.exists(output_val_h5) or not os.path.exists(output_val_seqs):
+	store_split(val_df, output_val_seqs, output_val_h5, output_train_val_h5)
+if not os.path.exists(output_train_h5) or not os.path.exists(output_train_seqs):
+	store_split(train_df, output_train_seqs, output_train_h5, output_train_val_h5)
 
 print("\nAll splits successfully processed and saved!")
 
