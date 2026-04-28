@@ -16,17 +16,53 @@ from sklearn.multioutput import MultiOutputClassifier
 # load train and val set ##
 ###########################
 
-# convert h5 embeds into numpy arrays
-with h5py.File("results/output/classifier/train_embeddings.h5", 'r') as h5_in:
-	X_train = h5_in['embeddings'][...]
-with h5py.File("results/output/classifier/validation_embeddings.h5", 'r') as h5_in:
-	X_val = h5_in['embeddings'][...]
+def get_available_memory():
+	try:
+		with open('/proc/meminfo', 'r') as f:
+			for line in f:
+				if 'MemAvailable' in line:
+					return int(line.split()[1]) / (1024**2)
+	except Exception:
+		return 0.0
+	return 0.0
 
-# load significance data and convert to numpy
-y_train = pd.read_csv("results/output/classifier/train_dataset.tsv.gz", usecols=['sig_ge', 'sig_iu'] , compression="gzip", sep='\t', low_memory=False)
-y_val = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", usecols=['sig_ge', 'sig_iu'], compression="gzip", sep='\t', low_memory=False)
+
+# load full dataset and extract row indeces
+train_df = pd.read_csv("results/output/classifier/train_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+val_df = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+train_indices = sorted(train_df['source_row'].tolist())
+val_indices = sorted(val_df['source_row'].tolist())
+
+# get embeddings
+embeds_path = "results/output/dataset_prep/embeddings_DNABERT2.h5"
+with h5py.File(embeds_path, 'r') as embeds_in:
+	dataset = embeds_in['embeddings']
+	available_RAM = get_available_memory()
+	print(f'available system memory: {available_RAM:.1f} GB')
+
+	if available_RAM >= 8.0:
+		print("that's enough to load all embeddings quickly!")
+		embeddings = dataset[...]
+		X_train = embeddings[train_indices]
+		X_val = embeddings[val_indices]
+		del embeddings
+	else:
+		print("that's not enough and I'll have to use fancy indexing to get embeds.\nThis will be a little slower.")
+		X_train = dataset[train_indices]
+		X_val = dataset[val_indices]
+
+# create X
+train_mapping = np.searchsorted(train_indices, train_df['source_row'].tolist())
+val_mapping = np.searchsorted(val_indices, val_df['source_row'].tolist())
+X_train = X_train[train_mapping][...]
+X_val = X_val[val_mapping][...]
+
+# create y
+y_train = train_df[['sig_ge', 'sig_iu']]
+y_val = val_df[['sig_ge', 'sig_iu']]
 y_train_np = y_train.values
 y_val_np = y_val.values
+
 
 ####################
 ## PCA on X_train ##
