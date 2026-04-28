@@ -9,15 +9,47 @@ def store_split(split_df, tsv_output_path, h5_output_path, source_h5_path):
     
 	print(f"\nProcessing split saving to: {tsv_output_path}")
 
+	###########################
+	##### DIAGNOSIS ###########
+	###########################
+	print(f"split_df rows: {len(split_df)}")
+	print(f"split_df index min/max: {split_df.index.min()} / {split_df.index.max()}")
+	print(f"split_df head indices: {split_df.index[:5].tolist()}")
+	print(f"split_df tail indices: {split_df.index[-5:].tolist()}")
+
+
 	split_df.to_csv(tsv_output_path, compression="gzip", sep='\t', header=True, index=False)
 
 	# store embeddings using seq-frame indeces
-	indices = sorted(split_df.index.tolist())
+	indices = split_df.index.tolist()
+
+	###########################
+	##### DIAGNOSIS ###########
+	###########################
+	print(f"indices length: {len(indices)}")
+	print(f"indices min/max: {min(indices)} / {max(indices)}")
+	print(f"indices head: {indices[:5]}")
+	print(f"indices tail: {indices[-5:]}")
+
 	print(f"Extracting {len(indices)} corresponding embeddings...")
 	with h5py.File(source_h5_path, 'r') as h5_in, h5py.File(h5_output_path, 'w') as h5_out:
 		dataset_in = h5_in['embeddings']
+
+		###########################
+		##### DIAGNOSIS ###########
+		###########################
+		print(f"source H5 shape: {dataset_in.shape}")
+		if len(indices) > 0:
+			print(f"first source embedding row shape: {dataset_in[indices[0]].shape}")
+
 		dataset_out = h5_out.create_dataset("embeddings", shape=(len(indices), 768), dtype='float32', compression="gzip")
 		dataset_out[:] = dataset_in[indices]
+
+	###########################
+	##### DIAGNOSIS ###########
+	###########################
+	with h5py.File(h5_output_path, "r") as h5_check:
+		print(f"written H5 shape: {h5_check['embeddings'].shape}")
 
 	print(f"Successfully saved embeddings to {h5_output_path}")
 
@@ -56,6 +88,12 @@ input_h5 = "results/output/dataset_prep/embeddings_DNABERT2.h5"
 output_test_h5 = "results/output/classifier/test_embeddings.h5"
 output_train_val_h5 = "results/output/classifier/train_and_validation_dataset.h5"
 
+###########################
+##### DIAGNOSIS ###########
+###########################
+print(f"test_df rows: {len(test_df)}")
+print(f"train_val_df rows: {len(train_val_df)}")
+
 if not os.path.exists(output_test_h5) or not os.path.exists(output_test_seqs):
 	store_split(test_df, output_test_seqs, output_test_h5, input_h5)
 if not os.path.exists(output_train_val_h5) or not os.path.exists(output_train_val_seqs):
@@ -79,6 +117,13 @@ output_val_seqs = "results/output/classifier/validation_dataset.tsv.gz"
 output_train_seqs = "results/output/classifier/train_dataset.tsv.gz"
 output_val_h5 = "results/output/classifier/validation_embeddings.h5"
 output_train_h5 = "results/output/classifier/train_embeddings.h5"
+
+###########################
+##### DIAGNOSIS ###########
+###########################
+print(f"val_df rows: {len(val_df)}")
+print(f"train_df rows: {len(train_df)}")
+
 
 if not os.path.exists(output_val_h5) or not os.path.exists(output_val_seqs):
 	store_split(val_df, output_val_seqs, output_val_h5, output_train_val_h5)

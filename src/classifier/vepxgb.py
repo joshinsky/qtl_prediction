@@ -75,6 +75,3 @@ plt.tight_layout()
 output_plot_path = "results/output/classifier/pca_explained_variance.png"
 plt.savefig(output_plot_path, dpi=300)
 print(f"PCA variance plot saved to {output_plot_path}")
-
-# Optional: show the plot if running interactively
-plt.show()
