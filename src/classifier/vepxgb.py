@@ -126,6 +126,7 @@ print(f"PCA variance plot saved to {output_plot_path}")
 
 # load user-specified classifier choice
 chosen_classifier = sys.argv[1]
+print(f'start training {chosen_classifier}')
 
 # setup single-label classifier
 automl = AutoML(
@@ -141,6 +142,7 @@ model = MultiOutputClassifier(automl)
 model.fit(X_train_pca, y_train_np)
 
 # predict and extract probabilities for each class
+print(f'get predicted probabilities')
 train_probs = model.predict_proba(X_train_pca)
 val_probs = model.predict_proba(X_val_pca)
 train_prob_sig_ge = train_probs[0][:, 1]
@@ -149,6 +151,7 @@ train_prob_sig_iu = train_probs[1][:, 1]
 val_prob_sig_iu = val_probs[1][:, 1]
 
 # Calculate ROC AUC
+print(f'get ROC AUC')
 auc_train_ge = roc_auc_score(y_train_np[:, 0], train_prob_sig_ge)
 auc_val_ge = roc_auc_score(y_val_np[:, 0], val_prob_sig_ge)
 auc_train_iu = roc_auc_score(y_train_np[:, 1], train_prob_sig_iu)
@@ -192,13 +195,15 @@ def plot_roc(y_true_np, y_probs, target_names, title, out_path):
 	plt.legend(loc="lower right")
 	plt.grid(alpha=0.3)
 
-	# save and show
+	# save plot
 	plt.tight_layout()
 	plt.savefig(out_path, dpi=500)
 	plt.close()
+	print(f"successfully created and saved '{title}' at:\n{out_path}")
 
 
 # plot ROCs
+print(f'plotting:')
 plot_roc(
 	y_true_np=y_train_np,
 	y_probs=train_probs,
