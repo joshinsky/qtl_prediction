@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
-from flaml import AutoML
+from flaml import AutoML, tune
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc
@@ -130,6 +130,7 @@ def run_pca(X_train, X_val, n_components=1):
 
 # run or skip pca
 if pca_components == 'skip':
+	print("skipping pca...")
 	X_train_pca, X_val_pca = X_train, X_val
 else:
 	try: 
@@ -158,7 +159,13 @@ print(f"calculated scale_pos_weight: {average_scale_weight:.2f}")
 
 # custom hyperparameter space for xgboost
 custom_search_space = {
-	"xgboost": {"scale_pos_weight": {"domain": average_scale_weight}}}
+	"xgboost": {
+		"scale_pos_weight": {"domain": average_scale_weight},
+		"max_depth": {"domain": tune.randint(lower=2, upper=6)},
+		"colsample_bytree": {"domain": tune.uniform(lower=0.4, upper=0.8)},
+		"reg_alpha": {"domain": tune.loguniform(lower=0.1, upper=10.0)},
+		"reg_lambda": {"domain": tune.loguniform(lower=0.1, upper=10.0)}
+	}}
 
 # setup single-label classifier
 automl = AutoML(
