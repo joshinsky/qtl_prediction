@@ -126,7 +126,7 @@ print(f"PCA variance plot saved to {output_plot_path}")
 
 # load user-specified classifier choice
 chosen_classifier = sys.argv[1]
-print(f'start training {chosen_classifier}')
+print(f'\nstart training {chosen_classifier}')
 
 # setup single-label classifier
 automl = AutoML(
