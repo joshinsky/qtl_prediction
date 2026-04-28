@@ -5,7 +5,7 @@ import numpy as np
 import sys
 
 # load dataset
-df = pd.read_csv("results/output/dataset_prep/full_dataset_deduplicated.tsv.gz", sep='\t', compression='gzip')
+df = pd.read_csv("results/output/dataset_prep/deduplicated_dataset.tsv.gz", sep='\t', compression='gzip')
 
 def inject_variant(row):
     # variant ID is formatted as 'chr_pos_ref_alt'
@@ -37,5 +37,5 @@ df = df.dropna(subset=['variant_window_alt'])
 
 print("Saving updated dataset...")
 # Save the new dataset
-df.to_csv("final_full_dataset.tsv.gz", sep='\t', index=False, compression='gzip')
+df.to_csv("results/output/dataset_prep/final_full_dataset.tsv.gz", sep='\t', index=False, compression='gzip')
 print("Done!")
