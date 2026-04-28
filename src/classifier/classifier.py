@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc
 from sklearn.multioutput import MultiOutputClassifier
 
+
 ####################
 ## get user input ##
 ####################
@@ -23,10 +24,6 @@ except IndexError:
 	print("example 1:\npython3 classifier.py xgboost 300")
 	print("example 2:\npython3 classifier.py xgboost skip")
 	sys.exit(1)
-
-
-
-
 
 
 ###########################
@@ -42,7 +39,6 @@ def get_available_memory():
 	except Exception:
 		return 0.0
 	return 0.0
-
 
 # load full dataset and extract row indeces
 train_df = pd.read_csv("results/output/classifier/train_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
@@ -130,6 +126,8 @@ def run_pca(X_train, X_val, n_components=1):
 	plt.savefig(output_plot_path, dpi=300)
 	print(f"PCA variance plot saved to {output_plot_path}")
 
+	return X_train_pca, X_val_pca
+
 # run or skip pca
 if pca_components == 'skip':
 	X_train_pca, X_val_pca = X_train, X_val
@@ -146,9 +144,21 @@ else:
 ## Train classifier ##
 ######################
 
-# load user-specified classifier choice
-chosen_classifier = sys.argv[1]
-print(f'\nstart training {chosen_classifier}')
+print(f'\nstart training {chosen_classifier}...')
+
+# calculate class imbalance
+pos_ge = y_train_np[:, 0].sum()
+neg_ge = len(y_train_np) - pos_ge
+scale_pos_weight_ge = neg_ge / pos_ge if pos_ge > 0 else 1
+pos_iu = y_train_np[:, 1].sum()
+neg_iu = len(y_train_np) - pos_iu
+scale_pos_weight_iu = neg_iu / pos_iu if pos_iu > 0 else 1
+average_scale_weight = (scale_pos_weight_ge + scale_pos_weight_iu) / 2
+print(f"calculated scale_pos_weight: {average_scale_weight:.2f}")
+
+# custom hyperparameter space for xgboost
+custom_search_space = {
+	"xgboost": {"scale_pos_weight": {"domain": average_scale_weight}}}
 
 # setup single-label classifier
 automl = AutoML(
@@ -156,15 +166,17 @@ automl = AutoML(
 	estimator_list=[chosen_classifier],
 	time_budget=300,
 	metric='roc_auc',
+	custom_hp=custom_search_space,
 	verbose=0
 	)
 
 # wrap single-label classifier into multi-output classifer
+print("fit model...")
 model = MultiOutputClassifier(automl)
 model.fit(X_train_pca, y_train_np)
 
 # predict and extract probabilities for each class
-print(f'get predicted probabilities')
+print(f'get predicted probabilities...')
 train_probs = model.predict_proba(X_train_pca)
 val_probs = model.predict_proba(X_val_pca)
 train_prob_sig_ge = train_probs[0][:, 1]
