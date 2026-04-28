@@ -11,6 +11,23 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc
 from sklearn.multioutput import MultiOutputClassifier
 
+####################
+## get user input ##
+####################
+
+try: 
+	chosen_classifier = sys.argv[1]
+	pca_components = sys.argv[2]
+except IndexError:
+	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components>")
+	print("example 1:\npython3 classifier.py xgboost 300")
+	print("example 2:\npython3 classifier.py xgboost skip")
+	sys.exit(1)
+
+
+
+
+
 
 ###########################
 # load train and val set ##
@@ -68,56 +85,61 @@ y_val_np = y_val.values
 ## PCA on X_train ##
 ####################
 
-# scale X_train
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_val = sc.transform(X_val)
+def run_pca(X_train, X_val, n_components=1):
 
-# Fit PCA on training data
-n_components = 300
-pca = PCA(n_components=n_components, random_state=42)
-X_train_pca = pca.fit_transform(X_train)
-X_val_pca = pca.transform(X_val)
+	# scale X_train
+	sc = StandardScaler()
+	X_train = sc.fit_transform(X_train)
+	X_val = sc.transform(X_val)
 
-explained_variance = pca.explained_variance_ratio_.sum()
-print(f"Total explained variance by {n_components} PCs: {explained_variance:.4f}")
+	# Fit PCA on training data
+	pca = PCA(n_components=n_components, random_state=42)
+	X_train_pca = pca.fit_transform(X_train)
+	X_val_pca = pca.transform(X_val)
+	explained_variance = pca.explained_variance_ratio_.sum()
+	print(f"Total explained variance by {n_components} PCs: {explained_variance:.4f}")
 
+	# Get the explained variance ratio for each PC
+	explained_variance_ratio = pca.explained_variance_ratio_
 
-#############################
-## Plot Explained Variance ##
-#############################
+	# Calculate the cumulative explained variance
+	cumulative_variance = np.cumsum(explained_variance_ratio)
 
-# Get the explained variance ratio for each PC
-explained_variance_ratio = pca.explained_variance_ratio_
+	# Create the plot
+	plt.figure(figsize=(10, 6))
 
-# Calculate the cumulative explained variance
-cumulative_variance = np.cumsum(explained_variance_ratio)
+	# Bar chart for individual explained variance
+	plt.bar(range(1, n_components + 1), explained_variance_ratio, alpha=0.6, color='b',
+        	label='Individual Explained Variance')
 
-# Create the plot
-plt.figure(figsize=(10, 6))
+	# Step plot (line) for cumulative explained variance
+	plt.step(range(1, n_components + 1), cumulative_variance, where='mid', color='r',
+		label='Cumulative Explained Variance')
 
-# Bar chart for individual explained variance
-plt.bar(range(1, n_components + 1), explained_variance_ratio, alpha=0.6, color='b',
-        label='Individual Explained Variance')
+	# Aesthetics
+	plt.title('PCA Explained Variance', fontsize=14)
+	plt.ylabel('Explained Variance Ratio')
+	plt.xlabel('Principal Component Index')
+	plt.xticks(np.arange(0, n_components + 1, step=10)) # Adjust step size if needed
+	plt.legend(loc='best')
+	plt.grid(axis='y', linestyle='--', alpha=0.7)
+	plt.tight_layout()
 
-# Step plot (line) for cumulative explained variance
-plt.step(range(1, n_components + 1), cumulative_variance, where='mid', color='r',
-         label='Cumulative Explained Variance')
+	# Save the plot
+	output_plot_path = "results/output/classifier/pca_explained_variance.png"
+	plt.savefig(output_plot_path, dpi=300)
+	print(f"PCA variance plot saved to {output_plot_path}")
 
-# Aesthetics
-plt.title('PCA Explained Variance', fontsize=14)
-plt.ylabel('Explained Variance Ratio')
-plt.xlabel('Principal Component Index')
-plt.xticks(np.arange(0, n_components + 1, step=10)) # Adjust step size if needed
-plt.legend(loc='best')
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-plt.tight_layout()
-
-# Save the plot
-output_plot_path = "results/output/classifier/pca_explained_variance.png"
-plt.savefig(output_plot_path, dpi=300)
-print(f"PCA variance plot saved to {output_plot_path}")
-
+# run or skip pca
+if pca_components == 'skip':
+	X_train_pca, X_val_pca = X_train, X_val
+else:
+	try: 
+		pca_components = int(pca_components)
+		X_train_pca, X_val_pca = run_pca(X_train, X_val, n_components=pca_components)
+	except (ValueError, TypeError):
+		print("input number of pca components as int or type 'skip'.")
+		sys.exit(1)
 
 
 ######################
@@ -132,7 +154,7 @@ print(f'\nstart training {chosen_classifier}')
 automl = AutoML(
 	task='classification',
 	estimator_list=[chosen_classifier],
-	time_budget=30,
+	time_budget=300,
 	metric='roc_auc',
 	verbose=0
 	)
@@ -151,7 +173,6 @@ train_prob_sig_iu = train_probs[1][:, 1]
 val_prob_sig_iu = val_probs[1][:, 1]
 
 # Calculate ROC AUC
-print(f'get ROC AUC')
 auc_train_ge = roc_auc_score(y_train_np[:, 0], train_prob_sig_ge)
 auc_val_ge = roc_auc_score(y_val_np[:, 0], val_prob_sig_ge)
 auc_train_iu = roc_auc_score(y_train_np[:, 1], train_prob_sig_iu)
