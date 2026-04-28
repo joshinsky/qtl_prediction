@@ -19,9 +19,9 @@ if len(sys.argv) < 2:
     raise SystemExit("Usage: ./DNABERT2_embeddings.py <dataset_name>")
 dataset = sys.argv[1]
 
-source_filename = f"results/output/dataset_prep/full_dataset_deduplicated.tsv.gz"
-seq_df = pd.read_csv(source_filename, compression='gzip', usecols=['variant_window'], sep='\t', low_memory=False)
-sequences = list(seq_df['variant_window'])
+source_filename = f"results/output/dataset_prep/final_full_dataset.tsv.gz"
+seq_df = pd.read_csv(source_filename, compression='gzip', usecols=['variant_window_alt'], sep='\t', low_memory=False)
+sequences = list(seq_df['variant_window_alt'])
 print(f"\nProcessing {len(sequences)} sequences...")
 
 # load the Tokenizer and Config
@@ -41,7 +41,7 @@ print("\nCreating embeddings...")
 max_length = 120    # based on max sequence length of 453 bp in dataset (Byte-Pair Encoding: enc_length = 0.25*seq_length)
 batch_size = 2000
 all_mean_embeddings = []
-output_file = f"results/output/dataset_prep/embeddings_DNABERT2.h5"
+output_file = f"results/output/dataset_prep/alt_embeddings_DNABERT2.h5"
 
 # get embeddings
 with h5py.File(output_file, 'w') as h5f:

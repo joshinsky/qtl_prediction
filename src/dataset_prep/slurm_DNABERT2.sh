@@ -38,7 +38,7 @@ conda activate /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/repo
 
 PROJECT_DIR="/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
 SCRIPT_PATH="${PROJECT_DIR}/src/dataset_prep/DNABERT2_embeddings.py"
-DATA_PATH="${PROJECT_DIR}/results/output/dataset_prep/full_dataset_deduplicated.tsv.gz"
+DATA_PATH="${PROJECT_DIR}/results/output/dataset_prep/final_full_dataset.tsv.gz"
 
 cd "${PROJECT_DIR}"
 
