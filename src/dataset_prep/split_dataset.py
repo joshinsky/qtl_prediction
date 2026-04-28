@@ -57,6 +57,6 @@ test_df.to_csv("results/output/classifier/test_dataset.tsv.gz", compression="gzi
 val_df.to_csv("results/output/classifier/validation_dataset.tsv.gz", compression="gzip", sep='\t', header=True, index=False)
 train_df.to_csv("results/output/classifier/train_dataset.tsv.gz", compression="gzip", sep='\t', header=True, index=False)
 
-print(f"\nFinal row counts -> Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
+print(f"\nFinal row counts -> Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")<
 print("\nAll splits successfully processed and saved!")
 
