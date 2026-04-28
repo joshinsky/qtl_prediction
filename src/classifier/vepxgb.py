@@ -128,8 +128,7 @@ print(f"PCA variance plot saved to {output_plot_path}")
 chosen_classifier = sys.argv[1]
 
 # setup single-label classifier
-automl = AutoML()
-automl.fit(
+automl = AutoML(
 	task='classification',
 	estimator_list=[chosen_classifier],
 	time_budget=30,
