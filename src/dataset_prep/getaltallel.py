@@ -30,9 +30,9 @@ def inject_variant(row, window_len=100):
 df = pd.read_csv("results/output/dataset_prep/deduplicated_dataset.tsv.gz", sep='\t', compression='gzip')
 
 print("Injecting ALT alleles to create variant sequences...")
-df[f'variant_window_20_alt'] = df.apply(inject_variant(window_len=20), axis=1)
-df[f'variant_window_100_alt'] = df.apply(inject_variant(window_len=100), axis=1)
-df[f'variant_window_1000_alt'] = df.apply(inject_variant(wondow_len=1000), axis=1)
+df[f'variant_window_20_alt'] = df.apply(lambda row: inject_variant(row, window_len=20), axis=1)
+df[f'variant_window_100_alt'] = df.apply(lambda row: inject_variant(row, window_len=100), axis=1)
+df[f'variant_window_1000_alt'] = df.apply(lambda row: inject_variant(row, window_len=1000), axis=1)
 
 # Save the new dataset
 print("Saving updated dataset...")

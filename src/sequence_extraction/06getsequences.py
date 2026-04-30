@@ -104,7 +104,7 @@ with gzip.open(destination_filename, 'wt') as outfile:
 		
 		# extract ref sequences and store in a new column
 		df_chunk['variant_window_20_ref'] = df_chunk.apply(lambda row: get_seq(row, gene_ref=all_genes, window=20), axis=1)
-		df_chunk['variant_window_100_ref'] = df_chunk.apply(lambda row: get_seq(row, gene_ref=all_genes, window=20), axis=1)
+		df_chunk['variant_window_100_ref'] = df_chunk.apply(lambda row: get_seq(row, gene_ref=all_genes, window=100), axis=1)
 		df_chunk['variant_window_1000_ref'] = df_chunk.apply(lambda row: get_seq(row, gene_ref=all_genes, window=1000), axis=1)
 
 		# write to .tsv.gz

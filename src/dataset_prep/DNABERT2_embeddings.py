@@ -2,7 +2,6 @@
 
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 import torch
-import time
 import sys
 import pandas as pd
 import numpy as np
@@ -12,17 +11,59 @@ from huggingface_hub import hf_hub_download
 from transformers.models.bert.configuration_bert import BertConfig
 import h5py
 
-
-start_time = time.time()
-
-if len(sys.argv) < 2:
-    raise SystemExit("Usage: ./DNABERT2_embeddings.py <dataset_name>")
+# get user input
+if len(sys.argv) < 3:
+    raise SystemExit("Usage: ./DNABERT2_embeddings.py <dataset_name> <window_len>")
 dataset = sys.argv[1]
+window_len = sys.argv[2]
 
-source_filename = f"results/output/dataset_prep/final_full_dataset.tsv.gz"
-seq_df = pd.read_csv(source_filename, compression='gzip', usecols=['variant_window_alt'], sep='\t', low_memory=False)
-sequences = list(seq_df['variant_window_alt'])
-print(f"\nProcessing {len(sequences)} sequences...")
+
+# get embeddings
+def get_embeds(sequences, output_file, batch_size, max_length, device):
+    with h5py.File(output_file, 'w') as h5f:
+        emb_dataset = h5f.create_dataset(
+            "embeddings", 
+            shape=(0, 768), 
+            maxshape=(None, 768), 
+            dtype='float32',
+            compression="gzip")
+
+        with torch.no_grad():
+            for i in range(0, len(sequences), batch_size):
+                batch_seqs = sequences[i:i+batch_size]
+        
+                encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", max_length=max_length)
+                input_ids = encoded_inputs["input_ids"].to(device)
+                attention_mask = encoded_inputs["attention_mask"].to(device)
+        
+                # compute embeddings
+                outputs = model(input_ids, attention_mask=attention_mask)
+                embeddings = outputs[0]
+        
+                # Expand mask for math operations
+                mask_expanded = attention_mask.unsqueeze(-1)
+                mean_batch_embeddings = ( (embeddings * mask_expanded).sum(dim=1) / mask_expanded.sum(dim=1).clamp(min=1) )
+        
+                # Convert to numpy CPU array
+                batch_np = mean_batch_embeddings.cpu().numpy()
+
+                # make space in emb_dataset for new entry & then add it
+                current_size = emb_dataset.shape[0]
+                emb_dataset.resize(current_size + batch_np.shape[0], axis=0)
+                emb_dataset[current_size:] = batch_np
+
+                if current_size%20 == 0:
+                    print(f"Processed {current_size + batch_np.shape[0]} / {len(sequences)}", end='\r')
+
+    print(f"Saved embeddings to {output_file}")
+
+
+# load raw string sequences
+source_filename = f"results/output/dataset_prep/{dataset}"
+seq_df = pd.read_csv(source_filename, compression='gzip', usecols=[f'variant_window_{window_len}_ref', f'variant_window_{window_len}_alt'], sep='\t', low_memory=False)
+ref_sequences = list(seq_df[f'variant_window_{window_len}_ref'])
+alt_sequences = list(seq_df[f'variant_window_{window_len}_alt'])
+print(f"\nProcessing {len(seq_df)} sequences...")
 
 # load the Tokenizer and Config
 print("\nLoading model...")
@@ -37,46 +78,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 model.eval()
 
-print("\nCreating embeddings...")
-max_length = 120    # based on max sequence length of 453 bp in dataset (Byte-Pair Encoding: enc_length = 0.25*seq_length)
-batch_size = 2000
-all_mean_embeddings = []
-output_file = f"results/output/dataset_prep/alt_embeddings_DNABERT2.h5"
+# get maximum token length
+approx_seq_len = (int(window_len) * 2) + 50
+max_length = int(approx_seq_len * 0.25) + 50    # account for Byte-pair encoding
+if dynamic_max_length > 512:
+    dynamic_max_length = 512
+print(f"Using max token length of {dynamic_max_length} for {window_len}bp window...")
 
 # get embeddings
-with h5py.File(output_file, 'w') as h5f:
-    emb_dataset = h5f.create_dataset(
-        "embeddings", 
-        shape=(0, 768), 
-        maxshape=(None, 768), 
-        dtype='float32',
-        compression="gzip")
-
-    with torch.no_grad():
-        for i in range(0, len(sequences), batch_size):
-            batch_seqs = sequences[i:i+batch_size]
-        
-            encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", max_length=max_length)
-            input_ids = encoded_inputs["input_ids"].to(device)
-            attention_mask = encoded_inputs["attention_mask"].to(device)
-        
-            # compute embeddings
-            outputs = model(input_ids, attention_mask=attention_mask)
-            embeddings = outputs[0]
-        
-            # Expand mask for math operations
-            mask_expanded = attention_mask.unsqueeze(-1)
-            mean_batch_embeddings = ( (embeddings * mask_expanded).sum(dim=1) / mask_expanded.sum(dim=1).clamp(min=1) )
-        
-            # Convert to numpy CPU array
-            batch_np = mean_batch_embeddings.cpu().numpy()
-
-            # make space in emb_dataset for new entry & then add it
-            current_size = emb_dataset.shape[0]
-            emb_dataset.resize(current_size + batch_np.shape[0], axis=0)
-            emb_dataset[current_size:] = batch_np
-
-            if current_size%20 == 0:
-                print(f"Processed {current_size + batch_np.shape[0]} / {len(sequences)}", end='\r')
-
-print(f"Saved embeddings to {output_file}")
+print("\nCreating embeddings...")
+batch_size = 2000
+ref_output_file = f"results/output/dataset_prep/ref_{window_len}_embeddings_DNABERT2.h5"
+alt_output_file = f"results/output/dataset_prep/alt_{window_len}_embeddings_DNABERT2.h5"
+get_embeds(ref_sequences, ref_output_file, batch_size, max_length, device)
+get_embeds(alt_sequences, alt_output_file, batch_size, max_length, device)
