@@ -22,7 +22,7 @@ try:
 	pca_components = sys.argv[2]
 	outfile_name = sys.argv[3]
 except IndexError:
-	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components> <store_results>")
+	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components> <outfile_name>")
 	print("example 1:\npython3 classifier.py xgboost 300 outfile_name")
 	print("example 2:\npython3 classifier.py xgboost skipPCA -")
 	sys.exit(1)
@@ -104,7 +104,7 @@ def run_pca(X_train, X_val, n_components=1):
 	X_val = sc.transform(X_val)
 
 	# Save the scaler
-	if store_results == 'store':
+	if outfile_name != '-':
 		joblib.dump(sc, f"results/output/classifier/{outfile_name}_fitted_scaler.joblib")
 
 	# Fit PCA on training data
@@ -113,7 +113,7 @@ def run_pca(X_train, X_val, n_components=1):
 	X_val_pca = pca.transform(X_val)
 
 	# Save the PCA model
-	if store_results == 'store':
+	if outfile_name != '-':
 		joblib.dump(pca, f"results/output/classifier/{outfile_name}_fitted_pca_{n_components}_comp.joblib")
 
     # Get the explained variance ratio for each PC
