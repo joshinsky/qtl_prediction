@@ -20,11 +20,11 @@ import joblib
 try: 
 	chosen_classifier = sys.argv[1]
 	pca_components = sys.argv[2]
-	store_results = sys.argv[3]
+	outfile_name = sys.argv[3]
 except IndexError:
 	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components> <store_results>")
-	print("example 1:\npython3 classifier.py xgboost 300 store")
-	print("example 2:\npython3 classifier.py xgboost skipPCA nstore")
+	print("example 1:\npython3 classifier.py xgboost 300 outfile_name")
+	print("example 2:\npython3 classifier.py xgboost skipPCA -")
 	sys.exit(1)
 
 
@@ -272,14 +272,14 @@ plot_roc(
 	y_probs=train_probs,
 	target_names=['significant expression-level effect', 'significant isoform-level effect'],
 	title='ROC for training',
-	out_path='results/figures/roc_curve_train.png'
+	out_path=f'results/figures/{outfile_name}_roc_curve_train.png'
 	)
 plot_roc(
 	y_true_np=y_val_np,
 	y_probs=val_probs,
 	target_names=['significant expression-level effect', 'significant isoform-level effect'],
 	title='ROC for validation',
-	out_path='results/figures/roc_curve_validation.png'
+	out_path=f'results/figures/{outfile_name}_roc_curve_validation.png'
 	)
 
 
@@ -288,8 +288,8 @@ plot_roc(
 ##################
 
 # Save the trained MultiOutputClassifier
-if store_results == 'store':
-	model_filename = f"results/output/classifier/trained_{chosen_classifier}_model.joblib"
+if outfile_name != '-':
+	model_filename = f"results/output/classifier/{outfile_name}.joblib"
 	joblib.dump(model, model_filename)
 	print(f"\nModel successfully saved to {model_filename}")
 else:
