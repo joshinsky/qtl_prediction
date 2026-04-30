@@ -10,6 +10,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc
 from sklearn.multioutput import MultiOutputClassifier
+import joblib
 
 
 ####################
@@ -19,11 +20,13 @@ from sklearn.multioutput import MultiOutputClassifier
 try: 
 	chosen_classifier = sys.argv[1]
 	pca_components = sys.argv[2]
+	store_results = sys.argv[3]
 except IndexError:
-	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components>")
-	print("example 1:\npython3 classifier.py xgboost 300")
-	print("example 2:\npython3 classifier.py xgboost skip")
+	print("not enough input arguments. Usage:\npython3 classifier.py <chosen_classifier> <pca_components> <store_results>")
+	print("example 1:\npython3 classifier.py xgboost 300 store")
+	print("example 2:\npython3 classifier.py xgboost skipPCA nstore")
 	sys.exit(1)
+
 
 
 ###########################
@@ -40,29 +43,41 @@ def get_available_memory():
 		return 0.0
 	return 0.0
 
-# load full dataset and extract row indeces
+def load_embedding(filename, train_indices, val_indices):
+	with h5py.File(filename, 'r') as embeds_in:
+		dataset = embeds_in['embeddings']
+		available_RAM = get_available_memory()
+		print(f'available system memory: {available_RAM:.1f} GB')
+
+		if available_RAM >= 8.0:
+			print("that's enough to load all embeddings quickly!")
+			embeddings = dataset[...]
+			X_train = embeddings[train_indices]
+			X_val = embeddings[val_indices]
+			del embeddings
+		else:
+			print("that's not enough and I'll have to use fancy indexing to get embeds.\nThis will be a little slower.")
+			X_train = dataset[train_indices]
+			X_val = dataset[val_indices]
+
+	return X_train, X_val
+
+
+# load dataset and extract row indeces
 train_df = pd.read_csv("results/output/classifier/train_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
 val_df = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
 train_indices = sorted(train_df['source_row'].tolist())
 val_indices = sorted(val_df['source_row'].tolist())
 
-# get embeddings
-embeds_path = "results/output/dataset_prep/embeddings_DNABERT2.h5"
-with h5py.File(embeds_path, 'r') as embeds_in:
-	dataset = embeds_in['embeddings']
-	available_RAM = get_available_memory()
-	print(f'available system memory: {available_RAM:.1f} GB')
+# load embeddings
+ref_embeds_path = "results/output/dataset_prep/ref_embeddings_DNABERT2.h5"
+alt_embeds_path = "results/output/dataset_prep/alt_embeddings_DNABERT2.h5"
+ref_emb_train, ref_emb_val = load_embedding(ref_embeds_path, train_indices, val_indices)
+alt_emb_train, alt_emb_val = load_embedding(alt_embeds_path, train_indices, val_indices)
 
-	if available_RAM >= 8.0:
-		print("that's enough to load all embeddings quickly!")
-		embeddings = dataset[...]
-		X_train = embeddings[train_indices]
-		X_val = embeddings[val_indices]
-		del embeddings
-	else:
-		print("that's not enough and I'll have to use fancy indexing to get embeds.\nThis will be a little slower.")
-		X_train = dataset[train_indices]
-		X_val = dataset[val_indices]
+print("Calculating Delta Embeddings (ALT - REF)...")
+X_train = alt_emb_train - ref_emb_train
+X_val = alt_emb_val - ref_emb_val
 
 # create X
 train_mapping = np.searchsorted(train_indices, train_df['source_row'].tolist())
@@ -88,14 +103,22 @@ def run_pca(X_train, X_val, n_components=1):
 	X_train = sc.fit_transform(X_train)
 	X_val = sc.transform(X_val)
 
+	# Save the scaler
+	if store_results == 'store':
+    	joblib.dump(sc, "results/output/classifier/fitted_scaler.joblib")
+
 	# Fit PCA on training data
 	pca = PCA(n_components=n_components, random_state=42)
 	X_train_pca = pca.fit_transform(X_train)
 	X_val_pca = pca.transform(X_val)
+
+	# Save the PCA model
+	if store_results == 'store':
+    	joblib.dump(pca, f"results/output/classifier/fitted_pca_{n_components}_comp.joblib")
+
+    # Get the explained variance ratio for each PC
 	explained_variance = pca.explained_variance_ratio_.sum()
 	print(f"Total explained variance by {n_components} PCs: {explained_variance:.4f}")
-
-	# Get the explained variance ratio for each PC
 	explained_variance_ratio = pca.explained_variance_ratio_
 
 	# Calculate the cumulative explained variance
@@ -158,14 +181,14 @@ average_scale_weight = (scale_pos_weight_ge + scale_pos_weight_iu) / 2
 print(f"calculated scale_pos_weight: {average_scale_weight:.2f}")
 
 # custom hyperparameter space for xgboost
-custom_search_space = {
-	"xgboost": {
-		"scale_pos_weight": {"domain": average_scale_weight},
-		"max_depth": {"domain": tune.randint(lower=2, upper=6)},
-		"colsample_bytree": {"domain": tune.uniform(lower=0.4, upper=0.8)},
-		"reg_alpha": {"domain": tune.loguniform(lower=0.1, upper=10.0)},
-		"reg_lambda": {"domain": tune.loguniform(lower=0.1, upper=10.0)}
-	}}
+# custom_search_space = {
+# 	"xgboost": {
+# 		"scale_pos_weight": {"domain": average_scale_weight},
+# 		"max_depth": {"domain": tune.randint(lower=2, upper=6)},
+# 		"colsample_bytree": {"domain": tune.uniform(lower=0.4, upper=0.8)},
+# 		"reg_alpha": {"domain": tune.loguniform(lower=0.1, upper=10.0)},
+# 		"reg_lambda": {"domain": tune.loguniform(lower=0.1, upper=10.0)}
+# 	}}
 
 # setup single-label classifier
 automl = AutoML(
@@ -173,7 +196,7 @@ automl = AutoML(
 	estimator_list=[chosen_classifier],
 	time_budget=300,
 	metric='roc_auc',
-	custom_hp=custom_search_space,
+	# custom_hp=custom_search_space,
 	verbose=0
 	)
 
@@ -260,8 +283,20 @@ plot_roc(
 	)
 
 
+##################
+## Export model ##
+##################
+
+# Save the trained MultiOutputClassifier
+if store_results == 'store':
+	model_filename = f"results/output/classifier/trained_{chosen_classifier}_model.joblib"
+	joblib.dump(model, model_filename)
+	print(f"\nModel successfully saved to {model_filename}")
+else:
+	pass
 
 
+print(f"\nFinished!")
 
 
 
