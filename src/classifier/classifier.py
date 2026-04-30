@@ -105,7 +105,7 @@ def run_pca(X_train, X_val, n_components=1):
 
 	# Save the scaler
 	if store_results == 'store':
-    	joblib.dump(sc, "results/output/classifier/fitted_scaler.joblib")
+		joblib.dump(sc, f"results/output/classifier/{outfile_name}_fitted_scaler.joblib")
 
 	# Fit PCA on training data
 	pca = PCA(n_components=n_components, random_state=42)
@@ -114,7 +114,7 @@ def run_pca(X_train, X_val, n_components=1):
 
 	# Save the PCA model
 	if store_results == 'store':
-    	joblib.dump(pca, f"results/output/classifier/fitted_pca_{n_components}_comp.joblib")
+		joblib.dump(pca, f"results/output/classifier/{outfile_name}_fitted_pca_{n_components}_comp.joblib")
 
     # Get the explained variance ratio for each PC
 	explained_variance = pca.explained_variance_ratio_.sum()
