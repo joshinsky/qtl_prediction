@@ -1,11 +1,16 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=dnabert2_embed
+#SBATCH --job-name=dnabert2_embed_with_ref_extended_window_range
 
 # Partition:
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:1 
+
+# Request exactly 1 GPU shard (half a GPU's VRAM)
+#SBATCH --gres=shard:1 
+
+# Array configuration for 3 tasks:
+#SBATCH --array=0-2
 
 # Processors per task:
 #SBATCH --ntasks=1
@@ -46,4 +51,10 @@ cd "${PROJECT_DIR}"
 # Job
 # -------------------------------------------------------------------------------------- #
 
-/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATA_PATH}"
+# Define the window sizes in a bash array
+WINDOWS=(20 1000 100)
+
+# Extract the current window size based on the task ID
+CURRENT_WINDOW="${WINDOWS[$SLURM_ARRAY_TASK_ID]}"
+
+/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATA_PATH}" "${CURRENT_WINDOW}"

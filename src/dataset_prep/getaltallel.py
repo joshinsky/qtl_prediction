@@ -14,7 +14,7 @@ def inject_variant(row, window_len=100):
     ref_seq = row[f'variant_window_{window_len}_ref'].upper()
     
     # ensure the reference allele actually matches the sequence at index 100
-    expected_ref_in_seq = ref_seq[100:100+len(ref_allele)]
+    expected_ref_in_seq = ref_seq[window_len:window_len+len(ref_allele)]
     if expected_ref_in_seq != ref_allele:
         print("something doesn't match!")
         sys.exit(1)
@@ -22,7 +22,7 @@ def inject_variant(row, window_len=100):
         
     # splice in the alternative allele
     # sequence before (first 100bp) + ALT allele + sequence after
-    alt_seq = ref_seq[:100] + alt_allele + ref_seq[100+len(ref_allele):]
+    alt_seq = ref_seq[:window_len] + alt_allele + ref_seq[window_len+len(ref_allele):]
     
     return alt_seq
 
