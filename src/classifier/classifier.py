@@ -21,7 +21,7 @@ import argparse
 def parse_arguments():
 	parser = argparse.ArgumentParser(description="Run XGBoost/LightGBM on genomic embeddings")
 	parser.add_argument("--classifier", type=str, default="xgboost", choices=["xgboost", "lightgbm"])
-	parser.add_argument("--pca", type=str, default="skip", help="Provide an integer like 300, or 'skip'")
+	parser.add_argument("--pca", type=str, default="skip", help="Provide an int (e.g. 300), 'auto' (for 95% variance), or 'skip'")
 	parser.add_argument("--window_size", type=str, choices=["20", "100", "1000"], required=True)
 	parser.add_argument("--embedding_type", type=str, choices=["alt", "delta"], required=True)
 	parser.add_argument("--gene_position", type=str, choices=["all", "exonic", "intronic", "intergenic"], required=True)
@@ -126,9 +126,15 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 		joblib.dump(sc, f"results/output/classifier/{outfile_name}_fitted_scaler.joblib")
 
 	# Fit PCA on training data
-	pca = PCA(n_components=n_components, random_state=42)
+	if n_components == 'auto':
+		pca = PCA(n_components=0.95, random_state=42)
+	else:
+		pca = PCA(n_components=int(n_components), random_state=42)
+
 	X_train_pca = pca.fit_transform(X_train)
 	X_val_pca = pca.transform(X_val)
+
+	actual_n_components = pca.n_components_	
 
 	# Save the PCA model
 	if outfile_name != '-':
@@ -157,7 +163,11 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 	plt.title('PCA Explained Variance', fontsize=14)
 	plt.ylabel('Explained Variance Ratio')
 	plt.xlabel('Principal Component Index')
-	plt.xticks(np.arange(0, n_components + 1, step=10)) # Adjust step size if needed
+
+	# dynamically adjust step-size based on n_components
+	step_size = max(1, actual_n_components // 10)	
+	plt.xticks(np.arange(0, n_components + 1, step=step_size))
+	
 	plt.legend(loc='best')
 	plt.grid(axis='y', linestyle='--', alpha=0.7)
 	plt.tight_layout()
@@ -354,10 +364,11 @@ def main():
 		X_train_pca, X_val_pca = X_train, X_val
 	else:
 		try: 
-			pca_components = int(args.pca)
-			X_train_pca, X_val_pca = run_pca(X_train, X_val, args.outfile, n_components=pca_components)
+			# Pass 'auto' directly, or convert to int
+			pca_param = 'auto' if args.pca.lower() == 'auto' else int(args.pca)
+			X_train_pca, X_val_pca = run_pca(X_train, X_val, args.outfile, n_components=pca_param)
 		except ValueError:
-			print("input number of pca components as int or type 'skip'.")
+			print("input number of pca components as int, 'auto', or 'skip'.")
 			sys.exit(1)
 
 	# train classifier

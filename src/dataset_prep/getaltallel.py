@@ -27,7 +27,7 @@ def inject_variant(row, window_len=100):
     return alt_seq
 
 # load dataset
-df = pd.read_csv("results/output/dataset_prep/deduplicated_dataset.tsv.gz", sep='\t', compression='gzip')
+df = pd.read_csv("results/output/dataset_prep/ref_seq_dataset.tsv.gz", sep='\t', compression='gzip')
 
 print("Injecting ALT alleles to create variant sequences...")
 df[f'variant_window_20_alt'] = df.apply(lambda row: inject_variant(row, window_len=20), axis=1)
