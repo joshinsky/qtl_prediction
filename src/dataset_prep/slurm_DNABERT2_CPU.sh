@@ -22,8 +22,8 @@
 #SBATCH --time=200:00:00
 
 # Output files:
-#SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-cpu-%A_%a.out
-#SBATCH --error=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-cpu-%A_%a.err
+#SBATCH --output=logs/dnabert2-cpu-%A_%a.out
+#SBATCH --error=logs/dnabert2-cpu-%A_%a.err
 
 set -euo pipefail
 
@@ -39,7 +39,7 @@ conda activate /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/repo
 # -------------------------------------------------------------------------------------- #
 
 PROJECT_DIR="/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
-SCRIPT_PATH="${PROJECT_DIR}/src/dataset_prep/DNABERT2_embeddings.py"
+SCRIPT_PATH="${PROJECT_DIR}/src/dataset_prep/DNABERT2_embeddings_CPU.py"
 DATA_PATH="${PROJECT_DIR}/results/output/dataset_prep/final_full_dataset.tsv.gz"
 
 cd "${PROJECT_DIR}"
