@@ -16,7 +16,7 @@
 #SBATCH --cpus-per-task=10
 
 # Memory for the job
-#SBATCH --mem=32G
+#SBATCH --mem=64G
 
 # Wall clock limit:
 #SBATCH --time=200:00:00
@@ -54,4 +54,4 @@ CURRENT_WINDOW="${WINDOWS[$SLURM_ARRAY_TASK_ID]}"
 # Tell PyTorch to fully utilize the 8 requested CPU cores
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATA_PATH}" "${CURRENT_WINDOW}"
+/usr/bin/time -v python3 -u "${SCRIPT_PATH}" "${DATA_PATH}" "${CURRENT_WINDOW}"

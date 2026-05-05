@@ -72,7 +72,7 @@ config = BertConfig.from_pretrained("quietflamingo/dnabert2-no-flashattention")
 config.pad_token_id = tokenizer.pad_token_id
 
 # build model with pre-trained weights
-model = AutoModel.from_pretrained("quietflamingo/dnabert2-no-flashattention", trust_remote_code=True)
+model = AutoModel.from_pretrained("quietflamingo/dnabert2-no-flashattention", trust_remote_code=True, config=config)
 model_path = hf_hub_download(repo_id="quietflamingo/dnabert2-no-flashattention", filename="pytorch_model.bin")
 device = torch.device("cpu")
 model = model.to(device)
