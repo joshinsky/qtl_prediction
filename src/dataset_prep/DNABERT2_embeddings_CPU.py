@@ -59,7 +59,7 @@ def get_embeds(sequences, output_file, batch_size, max_length, device):
 
 
 # load raw string sequences
-source_filename = f"results/output/dataset_prep/{dataset}"
+source_filename = dataset
 seq_df = pd.read_csv(source_filename, compression='gzip', usecols=[f'variant_window_{window_len}_ref', f'variant_window_{window_len}_alt'], sep='\t', low_memory=False)
 ref_sequences = list(seq_df[f'variant_window_{window_len}_ref'])
 alt_sequences = list(seq_df[f'variant_window_{window_len}_alt'])
