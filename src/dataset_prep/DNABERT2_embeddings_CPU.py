@@ -67,27 +67,27 @@ print(f"\nProcessing {len(seq_df)} sequences...")
 
 # load the Tokenizer and Config
 print("\nLoading model...")
-tokenizer = AutoTokenizer.from_pretrained("zhihan1996/DNABERT-2-117M", trust_remote_code=True)
-config = BertConfig.from_pretrained("zhihan1996/DNABERT-2-117M")
+tokenizer = AutoTokenizer.from_pretrained("quietflamingo/dnabert2-no-flashattention", trust_remote_code=True)
+config = BertConfig.from_pretrained("quietflamingo/dnabert2-no-flashattention")
 config.pad_token_id = tokenizer.pad_token_id
 
-# build model with pre-trained weights 
-model = AutoModel.from_pretrained("zhihan1996/DNABERT-2-117M", trust_remote_code=True)
-model_path = hf_hub_download(repo_id="zhihan1996/DNABERT-2-117M", filename="pytorch_model.bin")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# build model with pre-trained weights
+model = AutoModel.from_pretrained("quietflamingo/dnabert2-no-flashattention", trust_remote_code=True)
+model_path = hf_hub_download(repo_id="quietflamingo/dnabert2-no-flashattention", filename="pytorch_model.bin")
+device = torch.device("cpu")
 model = model.to(device)
 model.eval()
 
 # get maximum token length
 approx_seq_len = (int(window_len) * 2) + 50
-max_length = int(approx_seq_len * 0.25) + 50
+max_length = int(approx_seq_len * 0.25) + 50    # account for Byte-pair encoding
 if max_length > 512:
     max_length = 512
 print(f"Using max token length of {max_length} for {window_len}bp window...")
 
 # get embeddings
 print("\nCreating embeddings...")
-batch_size = 2000
+batch_size = 250
 ref_output_file = f"results/output/dataset_prep/ref_{window_len}_embeddings_DNABERT2.h5"
 alt_output_file = f"results/output/dataset_prep/alt_{window_len}_embeddings_DNABERT2.h5"
 get_embeds(ref_sequences, ref_output_file, batch_size, max_length, device)
