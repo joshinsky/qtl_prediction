@@ -74,7 +74,7 @@ def main(file_path):
             
     plt.title('Global Distribution of Variant Effects', weight='bold', pad=20, color='white')
     plt.tight_layout()
-    plt.savefig('fig1_global_effects.png', dpi=300, transparent=True)
+    plt.savefig('results/output/dataset_prep/fig1_global_effects.png', dpi=300, transparent=True)
     plt.close()
 
     # --- Plot 2: Variant Location vs Effect (100% Stacked Bar) ---
@@ -90,7 +90,7 @@ def main(file_path):
     plt.xticks(rotation=0)
     plt.legend(title='Effect Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
-    plt.savefig('fig2_location_vs_effect.png', dpi=300, transparent=True, bbox_inches='tight')
+    plt.savefig('results/output/dataset_prep/fig2_location_vs_effect.png', dpi=300, transparent=True, bbox_inches='tight')
     plt.close()
 
     # --- Plot 3: Chromosome Distribution (Simple Barplot) ---
@@ -103,7 +103,7 @@ def main(file_path):
     plt.xlabel('Chromosome')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig('fig3_chromosome_distribution.png', dpi=300, transparent=True)
+    plt.savefig('results/output/dataset_prep/fig3_chromosome_distribution.png', dpi=300, transparent=True)
     plt.close()
 
     # --- Plot 4: Effect Distribution Across Chromosomes (100% Stacked Bar) ---
@@ -119,7 +119,7 @@ def main(file_path):
     plt.xticks(rotation=45)
     plt.legend(title='Effect Type', bbox_to_anchor=(1.01, 1), loc='upper left')
     plt.tight_layout()
-    plt.savefig('fig4_chromosome_vs_effect.png', dpi=300, transparent=True, bbox_inches='tight')
+    plt.savefig('results/output/dataset_prep/fig4_chromosome_vs_effect.png', dpi=300, transparent=True, bbox_inches='tight')
     plt.close()
 
     # --- Plot 5: Variant Type (SNP vs INDEL) Total Distribution & Breakdown ---
@@ -138,7 +138,7 @@ def main(file_path):
     plt.gca().yaxis.set_major_formatter(plt.matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
     plt.legend(title='Effect Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
-    plt.savefig('fig5_type_absolute_counts.png', dpi=300, transparent=True, bbox_inches='tight')
+    plt.savefig('results/output/dataset_prep/fig5_type_absolute_counts.png', dpi=300, transparent=True, bbox_inches='tight')
     plt.close()
 
     print("Successfully saved 5 presentation-ready plots to the current directory.")
