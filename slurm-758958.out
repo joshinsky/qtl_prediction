@@ -1,0 +1,1 @@
+slurmstepd-node02: error: execve(): bad interpreter(/net/mimer/mnt/tank/projects2/kvs_students/2026/jl_qtl_prediction/conda_env/josh_env/bin/python3): No such file or directory
