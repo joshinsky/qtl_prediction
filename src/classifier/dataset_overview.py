@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def main():
-    file_path = "final_full_dataset.tsv.gz"
+    file_path = "results/output/dataset_prep/final_full_dataset.tsv.gz"
     print(f"Loading dataset: {file_path}")
     
     columns_to_load = [
@@ -61,7 +61,7 @@ def main():
             wedgeprops=dict(width=0.4, edgecolor='w'))
     plt.title('Global Distribution of Variant Effects', weight='bold', pad=20)
     plt.tight_layout()
-    plt.savefig('fig1_global_effects.png', dpi=300, transparent=True)
+    plt.savefig('results/figures/presentation/fig1_global_effects.png', dpi=300, transparent=True)
     plt.close()
 
     # --- Plot 2: Variant Location vs Effect (100% Stacked Bar) ---
@@ -77,7 +77,7 @@ def main():
     plt.xticks(rotation=0)
     plt.legend(title='Effect Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
-    plt.savefig('fig2_location_vs_effect.png', dpi=300, bbox_inches='tight')
+    plt.savefig('results/figures/presentation/fig2_location_vs_effect.png', dpi=300, bbox_inches='tight')
     plt.close()
 
     # --- Plot 3: Variant Type (SNP vs INDEL) vs Effect ---
@@ -93,7 +93,7 @@ def main():
     plt.xticks(rotation=0)
     plt.legend(title='Effect Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
-    plt.savefig('fig3_type_vs_effect.png', dpi=300, bbox_inches='tight')
+    plt.savefig('results/figures/presentation/fig3_type_vs_effect.png', dpi=300, bbox_inches='tight')
     plt.close()
 
     # --- Plot 4: Expression Level Bias (Boxplot with Log Scale) ---
@@ -109,14 +109,14 @@ def main():
     plt.xlabel('Variant Effect Type')
     plt.xticks(rotation=15)
     plt.tight_layout()
-    plt.savefig('fig4_tpm_bias.png', dpi=300)
+    plt.savefig('results/figures/presentation/fig4_tpm_bias.png', dpi=300)
     plt.close()
 
     print("Successfully saved 4 presentation-ready plots to the current directory:")
-    print(" - fig1_global_effects.png")
-    print(" - fig2_location_vs_effect.png")
-    print(" - fig3_type_vs_effect.png")
-    print(" - fig4_tpm_bias.png")
+    print(" - results/figures/presentation/fig1_global_effects.png")
+    print(" - results/figures/presentation/fig2_location_vs_effect.png")
+    print(" - results/figures/presentation/fig3_type_vs_effect.png")
+    print(" - results/figures/presentation/fig4_tpm_bias.png")
 
 if __name__ == "__main__":
     main()
