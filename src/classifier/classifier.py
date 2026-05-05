@@ -19,12 +19,11 @@ import argparse
 ####################
 
 def parse_arguments():
-	parser = argparse.ArgumentParser(description="Run XGBoost/LightGBM on genomic embeddings")
-	parser.add_argument("--classifier", type=str, default="xgboost", choices=["xgboost", "lightgbm"])
+	parser = argparse.ArgumentParser(description="Run XGBoost on genomic embeddings")
+	parser.add_argument("--classifier", type=str, default="xgboost", choices=["xgboost"])
 	parser.add_argument("--pca", type=str, default="skip", help="Provide an int (e.g. 300), 'auto' (for 95% variance), or 'skip'")
 	parser.add_argument("--window_size", type=str, choices=["20", "100", "1000"], required=True)
 	parser.add_argument("--embedding_type", type=str, choices=["alt", "delta"], required=True)
-	parser.add_argument("--gene_position", type=str, choices=["all", "exonic", "intronic", "intergenic"], required=True)
 	parser.add_argument("--target_label", type=str, choices=["standard", "both"], help="'standard' for GE+IU, 'both' for overlapping sig", default="standard")
 	parser.add_argument("--eval_set", type=str, choices=["val", "test"], default="val")
 	parser.add_argument("--class_weighting", type=str, choices=["none", "weighted"], default="none")
@@ -320,31 +319,37 @@ def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
 	print(f'get predicted probabilities...')
 	val_probs = model.predict_proba(X_val_pca)
-	
-	if args.gene_position == 'all':
-		mask = np.ones(len(val_df), dtype=bool)
-		title_suffix = "All"
-	else:
-		mask = val_df['position'] == args.gene_position  # Ensure 'Variant_Type' or similar column exists
-		title_suffix = args.gene_position.capitalize()
+
+	positions = ['all', 'exonic', 'intronic', 'intergenic', 'intragenic']
+
+	for pos in positions:
+		if pos == 'all':
+			mask = np.ones(len(val_df), dtype=bool)
+			title_suffix = "All"
+		elif pos == 'intragenic':
+			mask = val_df['position'].isin(['exonic', 'intronic'])
+			title_suffix = "Intragenic"
+		else:
+			mask = val_df['position'] == pos
+			title_suffix = pos.capitalize()
 		
 		if not mask.any():
-			print(f"Warning: No data found for gene_position == {args.gene_position}")
+			print(f"Warning: No data found for gene_position == {pos}")
 			return
 			
-	y_val_subset = y_val_np[mask]
-	val_probs_subset = [vp[mask] for vp in val_probs] if isinstance(val_probs, list) else val_probs[mask]
+		y_val_subset = y_val_np[mask]
+		val_probs_subset = [vp[mask] for vp in val_probs] if isinstance(val_probs, list) else val_probs[mask]
 	
-	# Determine file prefixes
-	base_out = f"results/figures/{args.outfile}"
+		# Determine file prefixes
+		base_out = f"results/figures/{args.outfile}_{pos}"
 	
-	if "roc" in args.outfile.lower():
-		plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
-	elif "cm" in args.outfile.lower():
-		plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
-	else:
-		plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
-		plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
+		if "roc" in args.outfile.lower():
+			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
+		elif "cm" in args.outfile.lower():
+			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
+		else:
+			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
+			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
 
 
 

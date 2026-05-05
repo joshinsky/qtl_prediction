@@ -3,21 +3,20 @@
 # Job name:
 #SBATCH --job-name=qtl_classifier
 
-# Partition & Resources (following the new shard rule)
+# Partition & Resources
 #SBATCH --partition=gpu
 #SBATCH --gres=shard:1 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=48:00:00
+#SBATCH --time=200:00:00
 
-# Job array for all 384 combinations (0 to 383)
-# To limit concurrent runs, you can append "%20" to run max 20 at a time: --array=0-383%20
-#SBATCH --array=0-383
+# Job array 
+#SBATCH --array=0-239%20
 
 # Output files:
-#SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/class-%A_%a.out
-#SBATCH --error=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/class-%A_%a.err
+#SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.out
+#SBATCH --error=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.err
 
 set -euo pipefail
 
@@ -38,11 +37,10 @@ cd "${PROJECT_DIR}"
 # -------------------------------------------------------------------------------------- #
 
 # Define the arrays for each parameter
-CLASSIFIERS=("xgboost" "lightgbm")
+CLASSIFIERS=("xgboost")
 PCAS=("skip" "auto")
 WINDOWS=("20" "100" "1000")
 EMBEDDINGS=("alt" "delta")
-POSITIONS=("all" "exonic" "intronic" "intergenic")
 TARGETS=("standard" "both")
 WEIGHTINGS=("none" "weighted")
 
@@ -62,9 +60,6 @@ W="${WEIGHTINGS[$w_idx]}"
 t_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 T="${TARGETS[$t_idx]}"
 
-pos_idx=$(( IDX % 4 )); IDX=$(( IDX / 4 ))
-POS="${POSITIONS[$pos_idx]}"
-
 emb_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 EMB="${EMBEDDINGS[$emb_idx]}"
 
@@ -74,14 +69,15 @@ WIN="${WINDOWS[$win_idx]}"
 pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 PCA="${PCAS[$pca_idx]}"
 
-clf_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
-CLF="${CLASSIFIERS[$clf_idx]}"
+# Define output file name/folder name
+OUT_BASE="xgboost_pca-${PCA}_win-${WIN}_emb-${EMB}_tgt-${T}_wt-${W}"
 
-# Define output file name based on parameters to keep them unique
-OUTFILE="${CLF}_pca-${PCA}_win-${WIN}_emb-${EMB}_pos-${POS}_tgt-${T}_wt-${W}"
+# Set the target folder path
+RESULTS_DIR="${PROJECT_DIR}/results/output/classifier/${OUT_BASE}"
+mkdir -p "${RESULTS_DIR}"
 
 echo "Running task $SLURM_ARRAY_TASK_ID with parameters:"
-echo "Classifier: $CLF | PCA: $PCA | Window: $WIN | Embedding: $EMB | Position: $POS | Target: $T | Weighting: $W"
+echo "Classifier: xgboost | PCA: $PCA | Window: $WIN | Embedding: $EMB | Target: $T | Weighting: $W"
 echo "Output file: $OUTFILE"
 
 # -------------------------------------------------------------------------------------- #
@@ -93,9 +89,8 @@ echo "Output file: $OUTFILE"
     --pca "$PCA" \
     --window_size "$WIN" \
     --embedding_type "$EMB" \
-    --gene_position "$POS" \
     --target_label "$T" \
     --class_weighting "$W" \
     --eval_set "val" \
-    --outfile "$OUTFILE"
+    --outfile "${OUT_BASE}/${OUT_BASE}"
 
