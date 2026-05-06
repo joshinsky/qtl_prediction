@@ -12,7 +12,7 @@
 #SBATCH --time=200:00:00
 
 # Job array 
-#SBATCH --array=0-31%8
+#SBATCH --array=0-31%4
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.out
