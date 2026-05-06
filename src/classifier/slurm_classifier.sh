@@ -78,7 +78,7 @@ mkdir -p "${RESULTS_DIR}"
 
 echo "Running task $SLURM_ARRAY_TASK_ID with parameters:"
 echo "Classifier: xgboost | PCA: $PCA | Window: $WIN | Embedding: $EMB | Target: $T | Weighting: $W"
-echo "Output file: $OUTFILE"
+echo "Output file: $OUT_BASE"
 
 # -------------------------------------------------------------------------------------- #
 # Job Execution
