@@ -28,7 +28,7 @@ source /home/ctools/opt/anaconda-2025-12-2/bin/activate
 conda activate /net/well/pool/projects2/kvs_students/2026/jl_qtl_prediction/repo/dnaLM/conda_env/dnaLM
 
 PROJECT_DIR="/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction"
-SCRIPT_PATH="${PROJECT_DIR}/src/classifier/your_classifier_script.py"
+SCRIPT_PATH="${PROJECT_DIR}/src/classifier/classifier.py"
 
 cd "${PROJECT_DIR}"
 
