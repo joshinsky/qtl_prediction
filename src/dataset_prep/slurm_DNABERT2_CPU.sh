@@ -1,29 +1,26 @@
 #!/bin/bash
 
 # Job name:
-#SBATCH --job-name=dnabert2_embed_cpu
+#SBATCH --job-name=dnabert2_embed_cpu_1000bp
 
 # Partition:
 #SBATCH --partition=cpu
-
-# Array configuration for 3 tasks:
-#SBATCH --array=0-2
 
 # Processors per task:
 #SBATCH --ntasks=1
 
 # CPUs per task (increased to 8 to speed up CPU execution):
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=16
 
 # Memory for the job
-#SBATCH --mem=64G
+#SBATCH --mem=100G
 
 # Wall clock limit:
 #SBATCH --time=200:00:00
 
 # Output files:
-#SBATCH --output=logs/dnabert2-cpu-%A_%a.out
-#SBATCH --error=logs/dnabert2-cpu-%A_%a.err
+#SBATCH --output=logs/dnabert2-cpu-1000bp-%j.out
+#SBATCH --error=logs/dnabert2-cpu-1000bp-%j.err
 
 set -euo pipefail
 
@@ -54,4 +51,4 @@ CURRENT_WINDOW="${WINDOWS[$SLURM_ARRAY_TASK_ID]}"
 # Tell PyTorch to fully utilize the 8 requested CPU cores
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-/usr/bin/time -v python3 -u "${SCRIPT_PATH}" "${DATA_PATH}" "${CURRENT_WINDOW}"
+/usr/bin/time -v python3 -u "${SCRIPT_PATH}" "${DATA_PATH}" "1000"
