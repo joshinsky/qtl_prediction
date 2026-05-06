@@ -9,7 +9,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=24:00:00
+#SBATCH --time=04:00:00
 
 # Job array 
 #SBATCH --array=0-31%8
