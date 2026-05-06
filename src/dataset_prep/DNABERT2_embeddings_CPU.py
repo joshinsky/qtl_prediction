@@ -32,7 +32,7 @@ def get_embeds(sequences, output_file, batch_size, max_length, device):
             for i in range(0, len(sequences), batch_size):
                 batch_seqs = sequences[i:i+batch_size]
         
-                encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", max_length=max_length)
+                encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", truncation=True, max_length=max_length)
                 input_ids = encoded_inputs["input_ids"].to(device)
                 attention_mask = encoded_inputs["attention_mask"].to(device)
         
