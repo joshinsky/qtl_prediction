@@ -239,7 +239,7 @@ def run_classifier(X_train_pca, y_train_np, args):
 ## Plot metrics ##
 ##################
 
-def plot_roc(y_true_np, y_probs, target_names, title, out_path):
+def plot_ROC(y_true_np, y_probs, target_names, title, out_path):
 	plt.figure(figsize=(8,6))
 	colors = ['blue', 'green']
 
