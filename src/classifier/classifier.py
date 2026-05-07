@@ -250,7 +250,7 @@ def plot_ROC(y_true_np, y_probs, target_names, title, out_path):
 		if isinstance(y_probs, list):
 			prob_significant = y_probs[i][:, 1] 
 		else: 
-			rob_significant = y_probs[:, 1]
+			prob_significant = y_probs[:, 1]
 
 		# case: multiple vs only one target
 		if y_true_np.ndim > 1: 
