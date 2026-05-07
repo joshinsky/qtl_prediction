@@ -93,14 +93,8 @@ def load_data(args):
 	X_val = X_val[val_mapping][...]
 
 	# create y
-	if args.target_label == 'both':
-		train_df['sig_both'] = (train_df['sig_ge'] & train_df['sig_iu']).astype(int)
-		val_df['sig_both'] = (val_df['sig_ge'] & val_df['sig_iu']).astype(int)
-		y_train = train_df[['sig_both']]
-		y_val = val_df[['sig_both']]
-	else:
-		y_train = train_df[['sig_ge', 'sig_iu']]
-		y_val = val_df[['sig_ge', 'sig_iu']]
+	y_train = train_df[['sig_ge', 'sig_iu']]
+	y_val = val_df[['sig_ge', 'sig_iu']]
 
 	# convert to np
 	y_train_np = y_train.values
@@ -206,16 +200,16 @@ def run_classifier(X_train_pca, y_train_np, args):
 	custom_search_space = {
 		args.classifier: {
 			"scale_pos_weight": {"domain": average_scale_weight},
-			"max_depth": {"domain": tune.randint(lower=2, upper=6)},
+			"max_depth": {"domain": tune.randint(lower=4, upper=12)},
 			"colsample_bytree": {"domain": tune.uniform(lower=0.4, upper=0.8)},
-			"reg_alpha": {"domain": tune.loguniform(lower=0.1, upper=10.0)},
-			"reg_lambda": {"domain": tune.loguniform(lower=0.1, upper=10.0)}
+			"reg_alpha": {"domain": tune.loguniform(lower=0.001, upper=10.0)},
+			"reg_lambda": {"domain": tune.loguniform(lower=0.001, upper=10.0)}
 		}}
 
 	automl = AutoML(
 		task='classification',
 		estimator_list=[args.classifier],
-		time_budget=300,
+		time_budget=1000,
 		metric='roc_auc',
 		custom_hp=custom_search_space,
 		verbose=0
@@ -254,17 +248,8 @@ def plot_ROC(y_true_np, y_probs, target_names, title, out_path):
 	# plot ROC for each targets
 	for i, target in enumerate(target_names):
 
-		# case: multiple vs only one target
-		if isinstance(y_probs, list):
-			prob_significant = y_probs[i][:, 1] 
-		else: 
-			prob_significant = y_probs[:, 1]
-
-		# case: multiple vs only one target
-		if y_true_np.ndim > 1: 
-			y_true_col = y_true_np[:, i] 
-		else: 
-			y_true_col = y_true_np
+		prob_significant = y_probs[i][:, 1] 
+		y_true_col = y_true_np[:, i]
 		
 		# get FPR, TPR and AUC
 		fpr, tpr, _ = roc_curve(y_true_col, prob_significant)
@@ -296,8 +281,8 @@ def plot_ROC(y_true_np, y_probs, target_names, title, out_path):
 
 def plot_multi_label_ROC(y_true_np, y_probs, title, out_path):
 	# Extract probabilities
-	prob_ge = y_probs[0][:, 1] if isinstance(y_probs, list) else y_probs[:, 1]
-	prob_iu = y_probs[1][:, 1] if isinstance(y_probs, list) else y_probs[:, 2] 
+	prob_ge = y_probs[0][:, 1]
+	prob_iu = y_probs[1][:, 1]
 	
 	true_ge = y_true_np[:, 0]
 	true_iu = y_true_np[:, 1]
@@ -382,8 +367,8 @@ def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 
 def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	# Extract predictions for GE (index 0) and IU (index 1)
-	prob_ge = y_probs[0][:, 1] if isinstance(y_probs, list) else y_probs[:, 1]
-	prob_iu = y_probs[1][:, 1] if isinstance(y_probs, list) else y_probs[:, 2] # Fallback if single array
+	prob_ge = y_probs[0][:, 1]
+	prob_iu = y_probs[1][:, 1]
 	
 	pred_ge = (prob_ge >= cutoff).astype(int)
 	pred_iu = (prob_iu >= cutoff).astype(int)
@@ -415,55 +400,71 @@ def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	plt.close()
 	print(f"Saved Combined 4x4 Confusion Matrix to {target_out_path}")
 
-
-def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
+def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val_df, model, args, target_names):
 	print(f'get predicted probabilities...')
 
+	# 1. Get probabilities for both sets
 	if isinstance(model, dict):
 		# case: two single classifiers
+		train_probs_ge = model['ge'].predict_proba(X_train_pca)
+		train_probs_iu = model['iu'].predict_proba(X_train_pca)
+		train_probs = [train_probs_ge, train_probs_iu]
+
 		val_probs_ge = model['ge'].predict_proba(X_val_pca)
 		val_probs_iu = model['iu'].predict_proba(X_val_pca)
 		val_probs = [val_probs_ge, val_probs_iu]
 	else:
 		# case: multi-output classifier
+		train_probs = model.predict_proba(X_train_pca)
 		val_probs = model.predict_proba(X_val_pca)
-
 
 	positions = ['all', 'exonic', 'intronic', 'intergenic', 'intragenic']
 
 	for pos in positions:
+		# Setup position masks for BOTH train and val dataframes
 		if pos == 'all':
-			mask = np.ones(len(val_df), dtype=bool)
+			mask_val = np.ones(len(val_df), dtype=bool)
+			mask_train = np.ones(len(train_df), dtype=bool)
 			title_suffix = "All"
 		elif pos == 'intragenic':
-			mask = val_df['variant_location'].isin(['exonic', 'intronic'])
+			mask_val = val_df['variant_location'].isin(['exonic', 'intronic'])
+			mask_train = train_df['variant_location'].isin(['exonic', 'intronic'])
 			title_suffix = "Intragenic"
 		else:
-			mask = val_df['variant_location'] == pos
+			mask_val = val_df['variant_location'] == pos
+			mask_train = train_df['variant_location'] == pos
 			title_suffix = pos.capitalize()
 		
-		if not mask.any():
-			print(f"Warning: No data found for gene_position == {pos}")
+		if not mask_val.any() or not mask_train.any():
+			print(f"Warning: No data found for variant_location == {pos}")
 			return
 			
-		y_val_subset = y_val_np[mask]
-		val_probs_subset = [vp[mask] for vp in val_probs] if isinstance(val_probs, list) else val_probs[mask]
+		# Subset Val data
+		y_val_subset = y_val_np[mask_val]
+		val_probs_subset = [vp[mask_val] for vp in val_probs] if isinstance(val_probs, list) else val_probs[mask_val]
+
+		# Subset Train data
+		y_train_subset = y_train_np[mask_train]
+		train_probs_subset = [tp[mask_train] for tp in train_probs] if isinstance(train_probs, list) else train_probs[mask_train]
 	
 		# Determine file prefixes
-		base_out = f"results/figures/{args.outfile}_{pos}.png"
+		base_out_val = f"results/figures/{args.outfile}_{pos}.png"
+		base_out_train = f"results/figures/{args.outfile}_train_{pos}.png"
 
+		# Generate Validation Plots
 		if "roc" in args.outfile.lower():
-			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
-			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
+			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_roc.png"))
+			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out_val)
 		elif "cm" in args.outfile.lower():
-			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
-			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
+			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_cm.png"))
+			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out_val)
 		else:
-			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
-			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
-			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
-			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
-
+			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_roc.png"))
+			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_cm.png"))
+			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out_val)
+			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out_val)
+			plot_ROC(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_roc.png"))
+			plot_multi_label_ROC(y_train_subset, train_probs_subset, f'Train ({title_suffix})', base_out_train)
 
 
 ##################
@@ -499,8 +500,8 @@ def main():
 		print(f"\nModel successfully saved to {model_filename}")
 
 	# evaluate and plot
-	target_names = ['Significant Both'] if args.target_label == 'both' else ['sig_ge', 'sig_iu']
-	evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names)
+	target_names = ['sig_ge', 'sig_iu']
+	evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val_df, model, args, target_names)
 
 	print(f"\nFinished!")
 

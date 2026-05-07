@@ -42,7 +42,7 @@ PCAS=("skip" "auto")
 WINDOWS=("20" "100" "1000")
 EMBEDDINGS=("alt" "delta")
 TARGETS=("standard" "single")
-WEIGHTINGS=("none" "weighted")
+WEIGHTINGS=("weighted" "none")
 
 # -------------------------------------------------------------------------------------- #
 # Map Task ID to Parameters using modulo arithmetic
@@ -69,7 +69,7 @@ pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 PCA="${PCAS[$pca_idx]}"
 
 # Define output file name/folder name
-OUT_BASE="xgboost_pca-${PCA}_win-${WIN}_emb-${EMB}_tgt-${T}_wt-${W}"
+OUT_BASE="xgboost_wt-${W}_tgt-${T}_emb-${EMB}_win-${WIN}_pca-${PCA}"
 
 # Set the target folder path
 RESULTS_DIR="${PROJECT_DIR}/results/output/classifier/${OUT_BASE}"
