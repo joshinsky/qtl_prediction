@@ -12,7 +12,7 @@
 #SBATCH --time=08:00:00
 
 # Job array 
-#SBATCH --array=0-31%8
+#SBATCH --array=0-47%8
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.out
@@ -39,9 +39,9 @@ cd "${PROJECT_DIR}"
 # Define the arrays for each parameter
 CLASSIFIERS=("xgboost")
 PCAS=("skip" "auto")
-WINDOWS=("20" "100") #"1000")
+WINDOWS=("20" "100" "1000")
 EMBEDDINGS=("alt" "delta")
-TARGETS=("standard" "both")
+TARGETS=("standard" "single")
 WEIGHTINGS=("none" "weighted")
 
 # -------------------------------------------------------------------------------------- #
@@ -52,7 +52,6 @@ WEIGHTINGS=("none" "weighted")
 IDX=$SLURM_ARRAY_TASK_ID
 
 # Extract parameter based on modulus and division
-# Number of choices: CLASSIFIERS(2), PCAS(2), WINDOWS(3), EMBEDDINGS(2), POSITIONS(4), TARGETS(2), WEIGHTINGS(2)
 
 w_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 W="${WEIGHTINGS[$w_idx]}"
@@ -63,7 +62,7 @@ T="${TARGETS[$t_idx]}"
 emb_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 EMB="${EMBEDDINGS[$emb_idx]}"
 
-win_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
+win_idx=$(( IDX % 3 )); IDX=$(( IDX / 3 ))
 WIN="${WINDOWS[$win_idx]}"
 
 pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))

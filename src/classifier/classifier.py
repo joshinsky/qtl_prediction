@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import h5py
 from flaml import AutoML, tune
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, label_binarize
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.multioutput import MultiOutputClassifier
 import joblib
@@ -24,7 +24,7 @@ def parse_arguments():
 	parser.add_argument("--pca", type=str, default="skip", help="Provide an int (e.g. 300), 'auto' (for 95% variance), or 'skip'")
 	parser.add_argument("--window_size", type=str, choices=["20", "100", "1000"], required=True)
 	parser.add_argument("--embedding_type", type=str, choices=["alt", "delta"], required=True)
-	parser.add_argument("--target_label", type=str, choices=["standard", "both"], help="'standard' for GE+IU, 'both' for overlapping sig", default="standard")
+	parser.add_argument("--target_label", type=str, choices=["standard", "single"], help="'standard' for multi-output, 'single' for two separate classifiers", default="standard")
 	parser.add_argument("--eval_set", type=str, choices=["val", "test"], default="val")
 	parser.add_argument("--class_weighting", type=str, choices=["none", "weighted"], default="none")
 	parser.add_argument("--outfile", type=str, required=True)
@@ -222,10 +222,18 @@ def run_classifier(X_train_pca, y_train_np, args):
 	)
 
 	print("fit model...")
-	if args.target_label == 'both':
-		# train only on one feature
-		model = automl
-		model.fit(X_train_pca, y_train_np.ravel())
+	if args.target_label == 'single':
+		print("Training single-output model for sig_ge...")
+		model_ge = AutoML(task='classification', estimator_list=[args.classifier], time_budget=300, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
+		model_ge.fit(X_train_pca, y_train_np[:, 0])		# Column sig_ge
+
+		print("Training single-output model for sig_iu...")
+		model_iu = AutoML(task='classification', estimator_list=[args.classifier], time_budget=300, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
+		model_iu.fit(X_train_pca, y_train_np[:, 1]) 	# Column sig_iu
+
+		# store both models in a dict
+		model = {'ge': model_ge, 'iu': model_iu}
+
 	else:
 		# wrap single-label classifier into multi-output classifer
 		model = MultiOutputClassifier(automl)
@@ -286,6 +294,62 @@ def plot_ROC(y_true_np, y_probs, target_names, title, out_path):
 		plt.close()
 		print(f"successfully created and saved '{title}' at:\n{out_path}")
 
+def plot_multi_label_ROC(y_true_np, y_probs, title, out_path):
+	# Extract probabilities
+	prob_ge = y_probs[0][:, 1] if isinstance(y_probs, list) else y_probs[:, 1]
+	prob_iu = y_probs[1][:, 1] if isinstance(y_probs, list) else y_probs[:, 2] 
+	
+	true_ge = y_true_np[:, 0]
+	true_iu = y_true_np[:, 1]
+
+	# Map true labels to 4 distinct classes
+	def map_to_class(ge, iu):
+		return ge * 1 + iu * 2
+
+	y_true_mapped = map_to_class(true_ge, true_iu)
+	class_names = ['Neither', 'Only GE', 'Only IU', 'Both']
+
+	# Calculate combined probabilities assuming independence
+	prob_class_0 = (1 - prob_ge) * (1 - prob_iu) # Neither
+	prob_class_1 = prob_ge * (1 - prob_iu)       # Only GE
+	prob_class_2 = (1 - prob_ge) * prob_iu       # Only IU
+	prob_class_3 = prob_ge * prob_iu             # Both
+	
+	# Stack into shape (n_samples, 4) and binarize true labels
+	y_score_mapped = np.column_stack((prob_class_0, prob_class_1, prob_class_2, prob_class_3))
+	y_true_binarized = label_binarize(y_true_mapped, classes=[0, 1, 2, 3])
+	
+	plt.figure(figsize=(8,6))
+	colors = ['gray', 'blue', 'green', 'purple']
+	
+	fpr_grid = np.linspace(0.0, 1.0, 1000)
+	mean_tpr = np.zeros_like(fpr_grid)
+	
+	for i, color in zip(range(4), colors):
+		fpr, tpr, _ = roc_curve(y_true_binarized[:, i], y_score_mapped[:, i])
+		roc_auc = auc(fpr, tpr)
+		plt.plot(fpr, tpr, color=color, lw=2, label=f'{class_names[i]} (AUC = {roc_auc:.3f})')
+		mean_tpr += np.interp(fpr_grid, fpr, tpr)
+
+	mean_tpr /= 4
+	macro_auc = auc(fpr_grid, mean_tpr)
+	plt.plot(fpr_grid, mean_tpr, color='black', linestyle=':', lw=3, label=f'Macro-average (AUC = {macro_auc:.3f})')
+
+	plt.plot([0, 1], [0, 1], 'k--', lw=2)
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate', fontsize=12)
+	plt.ylabel('True Positive Rate', fontsize=12)
+	plt.title(f'Multi-class OvR ROC Curve - {title}', fontsize=14)
+	plt.legend(loc="lower right")
+	plt.grid(alpha=0.3)
+	
+	roc_out_path = out_path.replace(".png", "_Combined_4x4_ROC.png")
+	plt.savefig(roc_out_path, dpi=500)
+	plt.close()
+	print(f"Saved Combined 4x4 ROC to {roc_out_path}")
+
+
 def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 	for i, target in enumerate(target_names):
 
@@ -316,9 +380,54 @@ def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 		plt.close()
 		print(f"Saved Confusion Matrix to {target_out_path}")
 
+def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
+	# Extract predictions for GE (index 0) and IU (index 1)
+	prob_ge = y_probs[0][:, 1] if isinstance(y_probs, list) else y_probs[:, 1]
+	prob_iu = y_probs[1][:, 1] if isinstance(y_probs, list) else y_probs[:, 2] # Fallback if single array
+	
+	pred_ge = (prob_ge >= cutoff).astype(int)
+	pred_iu = (prob_iu >= cutoff).astype(int)
+	
+	true_ge = y_true_np[:, 0]
+	true_iu = y_true_np[:, 1]
+
+	# Map combinations to 4 distinct classes:
+	# 0: Neither, 1: Only GE, 2: Only IU, 3: Both
+	def map_to_class(ge, iu):
+		return ge * 1 + iu * 2
+
+	y_true_mapped = map_to_class(true_ge, true_iu)
+	y_pred_mapped = map_to_class(pred_ge, pred_iu)
+
+	# Generate 4x4 Confusion Matrix
+	cm = confusion_matrix(y_true_mapped, y_pred_mapped, labels=[0, 1, 2, 3])
+	class_names = ['Neither', 'Only GE', 'Only IU', 'Both']
+	
+	disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+	
+	plt.figure(figsize=(8,6))
+	disp.plot(cmap=plt.cm.Purples, values_format='d')
+	plt.title(f"Combined 4x4 CM - {title} (Cutoff: {cutoff})")
+	plt.xticks(rotation=45)
+	
+	target_out_path = out_path.replace(".png", "_Combined_4x4.png")
+	plt.savefig(target_out_path, bbox_inches='tight')
+	plt.close()
+	print(f"Saved Combined 4x4 Confusion Matrix to {target_out_path}")
+
+
 def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
 	print(f'get predicted probabilities...')
-	val_probs = model.predict_proba(X_val_pca)
+
+	if isinstance(model, dict):
+		# case: two single classifiers
+		val_probs_ge = model['ge'].predict_proba(X_val_pca)
+		val_probs_iu = model['iu'].predict_proba(X_val_pca)
+		val_probs = [val_probs_ge, val_probs_iu]
+	else:
+		# case: multi-output classifier
+		val_probs = model.predict_proba(X_val_pca)
+
 
 	positions = ['all', 'exonic', 'intronic', 'intergenic', 'intragenic']
 
@@ -342,14 +451,18 @@ def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
 	
 		# Determine file prefixes
 		base_out = f"results/figures/{args.outfile}_{pos}.png"
-	
+
 		if "roc" in args.outfile.lower():
-			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
+			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
+			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
 		elif "cm" in args.outfile.lower():
-			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
+			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
+			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
 		else:
 			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_roc.png"))
 			plot_CM(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out.replace(".png", "_cm.png"))
+			plot_multi_label_ROC(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
+			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out)
 
 
 
