@@ -199,17 +199,20 @@ def run_classifier(X_train_pca, y_train_np, args):
 	# custom hyperparameter space for xgboost
 	custom_search_space = {
 		args.classifier: {
-			"scale_pos_weight": {"domain": average_scale_weight},
-			"max_depth": {"domain": tune.randint(lower=4, upper=12)},
-			"colsample_bytree": {"domain": tune.uniform(lower=0.4, upper=0.8)},
-			"reg_alpha": {"domain": tune.loguniform(lower=0.001, upper=10.0)},
-			"reg_lambda": {"domain": tune.loguniform(lower=0.001, upper=10.0)}
+			"scale_pos_weight": {"domain": tune.uniform(lower=1.0, upper=average_scale_weight * 1.2)},
+			# "scale_pos_weight": {"domain": average_scale_weight},
+			"max_depth": {"domain": tune.randint(lower=3, upper=10)},
+			"min_child_weight": {"domain": tune.randint(lower=1, upper=10)},
+			"subsample": {"domain": tune.uniform(lower=0.5, upper=0.9)}, 
+			"colsample_bytree": {"domain": tune.uniform(lower=0.5, upper=0.9)},
+			"reg_alpha": {"domain": tune.loguniform(lower=1e-4, upper=10.0)},
+			"reg_lambda": {"domain": tune.loguniform(lower=1e-4, upper=10.0)}
 		}}
 
 	automl = AutoML(
 		task='classification',
 		estimator_list=[args.classifier],
-		time_budget=1000,
+		time_budget=3600,
 		metric='roc_auc',
 		custom_hp=custom_search_space,
 		verbose=0
@@ -218,12 +221,16 @@ def run_classifier(X_train_pca, y_train_np, args):
 	print("fit model...")
 	if args.target_label == 'single':
 		print("Training single-output model for sig_ge...")
-		model_ge = AutoML(task='classification', estimator_list=[args.classifier], time_budget=300, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
+		model_ge = AutoML(task='classification', estimator_list=[args.classifier], time_budget=3000, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
 		model_ge.fit(X_train_pca, y_train_np[:, 0])		# Column sig_ge
+		# model_ge.fit(X_train_pca, y_train_np[:, 0], eval_set=[(X_val_pca, y_val_np[:, 0])], early_stopping_rounds=20)		# uncomment for early stopping
+		print("Best hyperparameters for GE:", model_ge.best_config)
 
 		print("Training single-output model for sig_iu...")
-		model_iu = AutoML(task='classification', estimator_list=[args.classifier], time_budget=300, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
+		model_iu = AutoML(task='classification', estimator_list=[args.classifier], time_budget=3600, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
 		model_iu.fit(X_train_pca, y_train_np[:, 1]) 	# Column sig_iu
+		# model_iu.fit(X_train_pca, y_train_np[:, 1], eval_set=[(X_val_pca, y_val_np[:, 1])], early_stopping_rounds=20)		# uncomment for early stopping
+		print("Best hyperparameters for IU:", model_iu.best_config)
 
 		# store both models in a dict
 		model = {'ge': model_ge, 'iu': model_iu}
@@ -232,7 +239,10 @@ def run_classifier(X_train_pca, y_train_np, args):
 		# wrap single-label classifier into multi-output classifer
 		model = MultiOutputClassifier(automl)
 		model.fit(X_train_pca, y_train_np)
+		print("Best hyperparameters for target 0 (GE):", model.estimators_[0].best_config)
+		print("Best hyperparameters for target 1 (IU):", model.estimators_[1].best_config)
 		
+
 	return model
 
 
