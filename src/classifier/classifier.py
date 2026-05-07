@@ -341,7 +341,7 @@ def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
 		val_probs_subset = [vp[mask] for vp in val_probs] if isinstance(val_probs, list) else val_probs[mask]
 	
 		# Determine file prefixes
-		base_out = f"results/figures/{args.outfile}_{pos}"
+		base_out = f"results/figures/{args.outfile}_{pos}.png"
 	
 		if "roc" in args.outfile.lower():
 			plot_ROC(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out)
