@@ -74,7 +74,9 @@ OUT_BASE="xgboost_pca-${PCA}_win-${WIN}_emb-${EMB}_tgt-${T}_wt-${W}"
 
 # Set the target folder path
 RESULTS_DIR="${PROJECT_DIR}/results/output/classifier/${OUT_BASE}"
+FIGURES_DIR="${PROJECT_DIR}/results/figures/${OUT_BASE}"
 mkdir -p "${RESULTS_DIR}"
+mkdir -p "${FIGURES_DIR}"
 
 echo "Running task $SLURM_ARRAY_TASK_ID with parameters:"
 echo "Classifier: xgboost | PCA: $PCA | Window: $WIN | Embedding: $EMB | Target: $T | Weighting: $W"

@@ -72,8 +72,8 @@ def load_data(args):
 	val_indices = sorted(val_df['source_row'].tolist())
 
 	# load embedding files based on window size
-	ref_embeds_path = f"results/output/dataset_prep/ref_embeddings_DNABERT2_{args.window_size}.h5"
-	alt_embeds_path = f"results/output/dataset_prep/alt_embeddings_DNABERT2_{args.window_size}.h5"
+	ref_embeds_path = f"results/output/dataset_prep/ref_{args.window_size}_embeddings_DNABERT2.h5"
+	alt_embeds_path = f"results/output/dataset_prep/alt_{args.window_size}_embeddings_DNABERT2.h5"
 	alt_emb_train, alt_emb_val = load_embedding(alt_embeds_path, train_indices, val_indices)
 
 	# if delta embedding is desired
