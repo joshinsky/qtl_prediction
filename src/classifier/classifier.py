@@ -327,10 +327,10 @@ def evaluate_results(X_val_pca, y_val_np, val_df, model, args, target_names):
 			mask = np.ones(len(val_df), dtype=bool)
 			title_suffix = "All"
 		elif pos == 'intragenic':
-			mask = val_df['position'].isin(['exonic', 'intronic'])
+			mask = val_df['variant_location'].isin(['exonic', 'intronic'])
 			title_suffix = "Intragenic"
 		else:
-			mask = val_df['position'] == pos
+			mask = val_df['variant_location'] == pos
 			title_suffix = pos.capitalize()
 		
 		if not mask.any():
