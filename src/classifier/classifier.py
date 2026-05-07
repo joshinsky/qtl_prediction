@@ -141,7 +141,7 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 
     # Get the explained variance ratio for each PC
 	explained_variance = pca.explained_variance_ratio_.sum()
-	print(f"Total explained variance by {n_components} PCs: {explained_variance:.4f}")
+	print(f"Total explained variance by {actual_n_components} PCs: {explained_variance:.4f}")
 	explained_variance_ratio = pca.explained_variance_ratio_
 
 	# Calculate the cumulative explained variance
@@ -151,11 +151,11 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 	plt.figure(figsize=(10, 6))
 
 	# Bar chart for individual explained variance
-	plt.bar(range(1, n_components + 1), explained_variance_ratio, alpha=0.6, color='b',
+	plt.bar(range(1, actual_n_components + 1), explained_variance_ratio, alpha=0.6, color='b',
         	label='Individual Explained Variance')
 
 	# Step plot (line) for cumulative explained variance
-	plt.step(range(1, n_components + 1), cumulative_variance, where='mid', color='r',
+	plt.step(range(1, actual_n_components + 1), cumulative_variance, where='mid', color='r',
 		label='Cumulative Explained Variance')
 
 	# Aesthetics
@@ -165,7 +165,7 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 
 	# dynamically adjust step-size based on n_components
 	step_size = max(1, actual_n_components // 10)	
-	plt.xticks(np.arange(0, n_components + 1, step=step_size))
+	plt.xticks(np.arange(0, actual_n_components + 1, step=step_size))
 	
 	plt.legend(loc='best')
 	plt.grid(axis='y', linestyle='--', alpha=0.7)
