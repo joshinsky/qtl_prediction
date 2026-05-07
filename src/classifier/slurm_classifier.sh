@@ -9,7 +9,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=08:00:00
+#SBATCH --time=24:00:00
 
 # Job array 
 #SBATCH --array=0-47%8
@@ -39,7 +39,7 @@ cd "${PROJECT_DIR}"
 # Define the arrays for each parameter
 CLASSIFIERS=("xgboost")
 PCAS=("skip" "auto")
-WINDOWS=("20" "100" "1000")
+WINDOWS=("1000" "100" "20")
 EMBEDDINGS=("alt" "delta")
 TARGETS=("standard" "single")
 WEIGHTINGS=("weighted" "none")
@@ -69,7 +69,7 @@ pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
 PCA="${PCAS[$pca_idx]}"
 
 # Define output file name/folder name
-OUT_BASE="xgboost_wt-${W}_tgt-${T}_emb-${EMB}_win-${WIN}_pca-${PCA}"
+OUT_BASE="xgboost_wt-${W}_tgt-${T}_pca-${PCA}_win-${WIN}_emb-${EMB}"
 
 # Set the target folder path
 RESULTS_DIR="${PROJECT_DIR}/results/output/classifier/${OUT_BASE}"
