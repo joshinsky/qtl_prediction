@@ -7,10 +7,7 @@
 #SBATCH --partition=gpu
 
 # Request exactly 1 GPU shard (half a GPU's VRAM)
-#SBATCH --gres=shard:1 
-
-# Array configuration for 3 tasks:
-#SBATCH --array=0-2
+#SBATCH --gres=shard:1
 
 # Processors per task:
 #SBATCH --ntasks=1
@@ -19,10 +16,10 @@
 #SBATCH --cpus-per-task=4
 
 # Memory for the job
-#SBATCH --mem=16G
+#SBATCH --mem=64G
 
 # Wall clock limit:
-#SBATCH --time=200:00:00
+#SBATCH --time=8:00:00
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/dnabert2-%A_%a.out
@@ -52,9 +49,4 @@ cd "${PROJECT_DIR}"
 # -------------------------------------------------------------------------------------- #
 
 # Define the window sizes in a bash array
-WINDOWS=(20 1000 100)
-
-# Extract the current window size based on the task ID
-CURRENT_WINDOW="${WINDOWS[$SLURM_ARRAY_TASK_ID]}"
-
-/usr/bin/time -v python3 "${SCRIPT_PATH}" "${DATA_PATH}" "${CURRENT_WINDOW}"
+/usr/bin/time -v python3 -u "${SCRIPT_PATH}" "${DATA_PATH}" "1000"

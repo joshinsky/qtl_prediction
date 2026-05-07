@@ -32,7 +32,7 @@ def get_embeds(sequences, output_file, batch_size, max_length, device):
             for i in range(0, len(sequences), batch_size):
                 batch_seqs = sequences[i:i+batch_size]
         
-                encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", max_length=max_length)
+                encoded_inputs = tokenizer(batch_seqs, return_tensors="pt", padding="max_length", truncation=True, max_length=max_length)
                 input_ids = encoded_inputs["input_ids"].to(device)
                 attention_mask = encoded_inputs["attention_mask"].to(device)
         
@@ -59,7 +59,7 @@ def get_embeds(sequences, output_file, batch_size, max_length, device):
 
 
 # load raw string sequences
-source_filename = f"results/output/dataset_prep/{dataset}"
+source_filename = dataset
 seq_df = pd.read_csv(source_filename, compression='gzip', usecols=[f'variant_window_{window_len}_ref', f'variant_window_{window_len}_alt'], sep='\t', low_memory=False)
 ref_sequences = list(seq_df[f'variant_window_{window_len}_ref'])
 alt_sequences = list(seq_df[f'variant_window_{window_len}_alt'])
@@ -87,7 +87,7 @@ print(f"Using max token length of {max_length} for {window_len}bp window...")
 
 # get embeddings
 print("\nCreating embeddings...")
-batch_size = 2000
+batch_size = 32
 ref_output_file = f"results/output/dataset_prep/ref_{window_len}_embeddings_DNABERT2.h5"
 alt_output_file = f"results/output/dataset_prep/alt_{window_len}_embeddings_DNABERT2.h5"
 get_embeds(ref_sequences, ref_output_file, batch_size, max_length, device)
