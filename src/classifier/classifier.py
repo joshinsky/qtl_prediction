@@ -349,19 +349,16 @@ def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 	for i, target in enumerate(target_names):
 
 		# case: multiple vs one target
-		if isinstance(y_probs, list):
-			prob_significant = y_probs[i][:, 1]
-		else:
-			prob_significant = y_probs[:, 1]
+		prob_significant = y_probs[i][:, 1]
+		y_true_col = y_true_np[:, i]
 
-		# case: multiple vs one target
-		if y_true_np.ndim > 1:
-			y_true_col = y_true_np[:, i]
-		else:
-			y_true_col = y_true_np
+		# calculate optimal cutoff using Youden's J statistic
+		fpr, tpr, thresholds = roc_curve(y_true_col, prob_significant)
+		best_idx = np.argmax(tpr - fpr)
+		best_cutoff = thresholds[best_idx]
 		
 		# create confusion matrix object
-		y_pred_class = (prob_significant >= cutoff).astype(int)
+		y_pred_class = (prob_significant >= best_cutoff).astype(int)
 		cm = confusion_matrix(y_true_col, y_pred_class)
 		
 		# plot confusion matrix
@@ -380,14 +377,25 @@ def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	prob_ge = y_probs[0][:, 1]
 	prob_iu = y_probs[1][:, 1]
 	
-	pred_ge = (prob_ge >= cutoff).astype(int)
-	pred_iu = (prob_iu >= cutoff).astype(int)
-	
 	true_ge = y_true_np[:, 0]
 	true_iu = y_true_np[:, 1]
 
+	# Calculate optimal cutoffs independently for GE and IU
+	fpr_ge, tpr_ge, thresholds_ge = roc_curve(true_ge, prob_ge)
+	best_cutoff_ge = thresholds_ge[np.argmax(tpr_ge - fpr_ge)]
+
+	fpr_iu, tpr_iu, thresholds_iu = roc_curve(true_iu, prob_iu)
+	best_cutoff_iu = thresholds_iu[np.argmax(tpr_iu - fpr_iu)]
+
+	# Apply specific cutoffs
+	pred_ge = (prob_ge >= best_cutoff_ge).astype(int)
+	pred_iu = (prob_iu >= best_cutoff_iu).astype(int)
+
+	# case: defined cutoff
+	# pred_ge = (prob_ge >= cutoff).astype(int)
+	# pred_iu = (prob_iu >= cutoff).astype(int)
+
 	# Map combinations to 4 distinct classes:
-	# 0: Neither, 1: Only GE, 2: Only IU, 3: Both
 	def map_to_class(ge, iu):
 		return ge * 1 + iu * 2
 
