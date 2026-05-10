@@ -72,8 +72,8 @@ PCA="${PCAS[$pca_idx]}"
 OUT_BASE="xgboost_wt-${W}_tgt-${T}_pca-${PCA}_win-${WIN}_emb-${EMB}"
 
 # Set the target folder path
-RESULTS_DIR="${PROJECT_DIR}/results/output/classifier/${OUT_BASE}"
-FIGURES_DIR="${PROJECT_DIR}/results/figures/${OUT_BASE}"
+RESULTS_DIR="results/output/classifier/${OUT_BASE}"
+FIGURES_DIR="results/figures/${OUT_BASE}"
 mkdir -p "${RESULTS_DIR}"
 mkdir -p "${FIGURES_DIR}"
 
