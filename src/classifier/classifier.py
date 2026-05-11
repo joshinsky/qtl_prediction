@@ -113,7 +113,7 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 	# scale X_train
 	# sc = StandardScaler()
 	# X_train = sc.fit_transform(X_train)
-	sc = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_scaler.joblib")
+	sc = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_scaler.joblib")
 	X_train = sc.transform(X_train)
 	X_val = sc.transform(X_val)
 
@@ -128,7 +128,7 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 	# 	pca = PCA(n_components=int(n_components), random_state=42)
 
 	# X_train_pca = pca.fit_transform(X_train)
-	pca = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_pca_auto_comp.joblib")
+	pca = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_pca_auto_comp.joblib")
 	X_train_pca = pca.transform(X_train)
 	X_val_pca = pca.transform(X_val)
 
@@ -623,7 +623,7 @@ def main():
 
 	# train classifier
 	# model = run_classifier(X_train_pca, y_train_np, args)
-	model = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt.joblib")	# uncomment for final evaluation
+	model = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt.joblib")	# uncomment for final evaluation
 	
 	# save model
 	# if args.outfile != '-':
