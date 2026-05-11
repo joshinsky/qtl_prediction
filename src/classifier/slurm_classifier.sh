@@ -12,7 +12,7 @@
 #SBATCH --time=24:00:00
 
 # Job array 
-#SBATCH --array=0-15%8
+#SBATCH --array=0-23%8
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.out
@@ -39,7 +39,7 @@ cd "${PROJECT_DIR}"
 # Define the arrays for each parameter
 CLASSIFIERS=("xgboost")
 PCAS=("skip" "auto")
-WINDOWS=("20" "100")
+WINDOWS=("20" "100" "1000")
 EMBEDDINGS=("alt")
 TARGETS=("standard" "single")
 WEIGHTINGS=("weighted" "none")
@@ -62,7 +62,7 @@ T="${TARGETS[$t_idx]}"
 emb_idx=$(( IDX % 1 )); IDX=$(( IDX / 1 ))
 EMB="${EMBEDDINGS[$emb_idx]}"
 
-win_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
+win_idx=$(( IDX % 3 )); IDX=$(( IDX / 3 ))
 WIN="${WINDOWS[$win_idx]}"
 
 pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
