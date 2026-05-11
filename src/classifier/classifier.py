@@ -410,7 +410,7 @@ def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	
 	plt.figure(figsize=(8,6))
 	disp.plot(cmap=plt.cm.Purples, values_format='d')
-	plt.title(f"Combined 4x4 CM - {title} (Cutoff: {best_cutoff})")
+	plt.title(f"Combined 4x4 CM - {title} (Cutoff: GE: {best_cutoff_ge}, IU: {best_cutoff_iu})")
 	plt.xticks(rotation=45)
 	
 	target_out_path = out_path.replace(".png", "_Combined_4x4.png")
