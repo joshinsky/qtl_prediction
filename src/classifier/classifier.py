@@ -67,7 +67,8 @@ def load_embedding(filename, train_indices, val_indices):
 def load_data(args):
 	# load dataset and extract row indeces
 	train_df = pd.read_csv("results/output/classifier/train_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
-	val_df = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+	# val_df = pd.read_csv("results/output/classifier/validation_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)
+	val_df = pd.read_csv("results/output/classifier/test_dataset.tsv.gz", compression="gzip", sep='\t', low_memory=False)		# uncomment for final eval
 	train_indices = sorted(train_df['source_row'].tolist())
 	val_indices = sorted(val_df['source_row'].tolist())
 
@@ -110,28 +111,32 @@ def load_data(args):
 def run_pca(X_train, X_val, outfile_name, n_components=1):
 
 	# scale X_train
-	sc = StandardScaler()
-	X_train = sc.fit_transform(X_train)
+	# sc = StandardScaler()
+	# X_train = sc.fit_transform(X_train)
+	sc = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_scaler.joblib")
+	X_train = sc.transform(X_train)
 	X_val = sc.transform(X_val)
 
 	# Save the scaler
-	if outfile_name != '-':
-		joblib.dump(sc, f"results/output/classifier/{outfile_name}_fitted_scaler.joblib")
+	# if outfile_name != '-':
+	# 	joblib.dump(sc, f"results/output/classifier/{outfile_name}_fitted_scaler.joblib")
 
 	# Fit PCA on training data
-	if n_components == 'auto':
-		pca = PCA(n_components=0.95, random_state=42)
-	else:
-		pca = PCA(n_components=int(n_components), random_state=42)
+	# if n_components == 'auto':
+	# 	pca = PCA(n_components=0.95, random_state=42)
+	# else:
+	# 	pca = PCA(n_components=int(n_components), random_state=42)
 
-	X_train_pca = pca.fit_transform(X_train)
+	# X_train_pca = pca.fit_transform(X_train)
+	pca = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt_fitted_pca_auto_comp.joblib")
+	X_train_pca = pca.transform(X_train)
 	X_val_pca = pca.transform(X_val)
 
 	actual_n_components = pca.n_components_	
 
 	# Save the PCA model
-	if outfile_name != '-':
-		joblib.dump(pca, f"results/output/classifier/{outfile_name}_fitted_pca_{n_components}_comp.joblib")
+	# if outfile_name != '-':
+	# 	joblib.dump(pca, f"results/output/classifier/{outfile_name}_fitted_pca_{n_components}_comp.joblib")
 
 	# Get the explained variance ratio for each PC
 	explained_variance = pca.explained_variance_ratio_.sum()
@@ -209,6 +214,19 @@ def run_classifier(X_train_pca, y_train_np, args):
 			"reg_lambda": {"domain": tune.loguniform(lower=1e-4, upper=10.0)}
 		}}
 
+	# # custom hyperparameter space for xgboost			# uncomment this and early stopping for fighting overfitting
+	# custom_search_space = {
+	# 	args.classifier: {
+	# 		"scale_pos_weight": {"domain": tune.uniform(lower=1.0, upper=average_scale_weight * 1.2)},
+	# 		# "scale_pos_weight": {"domain": average_scale_weight},
+	# 		"max_depth": {"domain": tune.randint(lower=3, upper=6)},
+	# 		"min_child_weight": {"domain": tune.randint(lower=1, upper=50)},
+	# 		"subsample": {"domain": tune.uniform(lower=0.5, upper=0.9)}, 
+	# 		"colsample_bytree": {"domain": tune.uniform(lower=0.5, upper=0.9)},
+	# 		"reg_alpha": {"domain": tune.loguniform(lower=1e-4, upper=10.0)},
+	# 		"reg_lambda": {"domain": tune.loguniform(lower=1e-4, upper=10.0)}
+	# 	}}		
+
 	automl = AutoML(
 		task='classification',
 		estimator_list=[args.classifier],
@@ -223,13 +241,13 @@ def run_classifier(X_train_pca, y_train_np, args):
 		print("Training single-output model for sig_ge...")
 		model_ge = AutoML(task='classification', estimator_list=[args.classifier], time_budget=3000, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
 		model_ge.fit(X_train_pca, y_train_np[:, 0])		# Column sig_ge
-		# model_ge.fit(X_train_pca, y_train_np[:, 0], eval_set=[(X_val_pca, y_val_np[:, 0])], early_stopping_rounds=20)		# uncomment for early stopping
+		# model_ge.fit(X_train_pca, y_train_np[:, 0], eval_set=[(X_val_pca, y_val_np[:, 0])], early_stopping_rounds=50)		# uncomment for early stopping
 		print("Best hyperparameters for GE:", model_ge.best_config)
 
 		print("Training single-output model for sig_iu...")
 		model_iu = AutoML(task='classification', estimator_list=[args.classifier], time_budget=3600, metric='roc_auc', custom_hp=custom_search_space, verbose=0)
 		model_iu.fit(X_train_pca, y_train_np[:, 1]) 	# Column sig_iu
-		# model_iu.fit(X_train_pca, y_train_np[:, 1], eval_set=[(X_val_pca, y_val_np[:, 1])], early_stopping_rounds=20)		# uncomment for early stopping
+		# model_iu.fit(X_train_pca, y_train_np[:, 1], eval_set=[(X_val_pca, y_val_np[:, 1])], early_stopping_rounds=50)		# uncomment for early stopping
 		print("Best hyperparameters for IU:", model_iu.best_config)
 
 		# store both models in a dict
@@ -577,8 +595,8 @@ def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val
 			plot_multi_label_ROC(y_train_subset, train_probs_subset, f'Train ({title_suffix})', base_out_train)
 			plot_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_PR.png"))
 			plot_PR(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_PR.png"))
-			plot_multi_label_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "4x4_PR.png"))
-			plot_multi_label_PR(y_val_subset, val_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "4x4_PR.png"))
+			plot_multi_label_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_4x4_PR.png"))
+			plot_multi_label_PR(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_4x4_PR.png"))
 
 ##################
 ## Main Program ##
@@ -604,13 +622,14 @@ def main():
 			sys.exit(1)
 
 	# train classifier
-	model = run_classifier(X_train_pca, y_train_np, args)
+	# model = run_classifier(X_train_pca, y_train_np, args)
+	model = joblib.load("results/output/classifier/xgboost_wt-weighted_tgt-standard_pca-auto_win-1000_emb-alt.joblib")	# uncomment for final evaluation
 	
 	# save model
-	if args.outfile != '-':
-		model_filename = f"results/output/classifier/{args.outfile}.joblib"
-		joblib.dump(model, model_filename)
-		print(f"\nModel successfully saved to {model_filename}")
+	# if args.outfile != '-':
+	# 	model_filename = f"results/output/classifier/{args.outfile}.joblib"
+	# 	joblib.dump(model, model_filename)
+	# 	print(f"\nModel successfully saved to {model_filename}")
 
 	# evaluate and plot
 	target_names = ['sig_ge', 'sig_iu']
