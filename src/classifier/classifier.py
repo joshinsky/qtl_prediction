@@ -8,7 +8,7 @@ import h5py
 from flaml import AutoML, tune
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, label_binarize
-from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, confusion_matrix, ConfusionMatrixDisplay, precision_recall_curve, average_precision_score
 from sklearn.multioutput import MultiOutputClassifier
 import joblib
 import argparse
@@ -418,6 +418,42 @@ def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	plt.close()
 	print(f"Saved Combined 4x4 Confusion Matrix to {target_out_path}")
 
+def plot_PR(y_true_np, y_probs, target_names, title, out_path):
+	plt.figure(figsize=(8,6))
+	colors = ['blue', 'green']
+
+	for i, target in enumerate(target_names):
+		prob_significant = y_probs[i][:, 1]
+		y_true_col = y_true_np[:, i]
+		
+		# get Precision, Recall and Average Precision (PR-AUC)
+		precision, recall, _ = precision_recall_curve(y_true_col, prob_significant)
+		pr_auc = average_precision_score(y_true_col, prob_significant)
+		
+		# Baseline is the ratio of positive cases
+		baseline = y_true_col.sum() / len(y_true_col)
+
+		# plot them
+		plt.plot(recall, precision, color=colors[i % len(colors)], lw=2,
+			label=f'{target} (PR AUC = {pr_auc:.3f})'
+			)
+		# plot baseline
+		plt.axhline(y=baseline, color=colors[i % len(colors)], lw=1, linestyle='--', alpha=0.5, label=f'{target} Baseline ({baseline:.3f})')
+
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('Recall', fontsize=12)
+	plt.ylabel('Precision', fontsize=12)
+	plt.title(f'Precision-Recall Curve - {title}', fontsize=14)
+	plt.legend(loc="upper right")
+	plt.grid(alpha=0.3)
+
+	plt.tight_layout()
+	plt.savefig(out_path, dpi=500)
+	plt.close()
+	print(f"successfully created and saved PR curve at:\n{out_path}")
+
+
 def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val_df, model, args, target_names):
 	print(f'get predicted probabilities...')
 
@@ -483,7 +519,8 @@ def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val
 			plot_multi_label_CM(y_val_subset, val_probs_subset, f'Validation ({title_suffix})', base_out_val)
 			plot_ROC(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_roc.png"))
 			plot_multi_label_ROC(y_train_subset, train_probs_subset, f'Train ({title_suffix})', base_out_train)
-
+			plot_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_PR.png"))
+			plot_PR(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_PR.png"))
 
 ##################
 ## Main Program ##
