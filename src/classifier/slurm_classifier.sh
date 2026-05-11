@@ -40,7 +40,7 @@ cd "${PROJECT_DIR}"
 CLASSIFIERS=("xgboost")
 PCAS=("auto")
 WINDOWS=("20" "100" "1000")
-EMBEDDINGS=("delta")
+EMBEDDINGS=("alt")
 TARGETS=("standard" "single")
 WEIGHTINGS=("weighted")
 
