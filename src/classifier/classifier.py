@@ -133,7 +133,7 @@ def run_pca(X_train, X_val, outfile_name, n_components=1):
 	if outfile_name != '-':
 		joblib.dump(pca, f"results/output/classifier/{outfile_name}_fitted_pca_{n_components}_comp.joblib")
 
-    # Get the explained variance ratio for each PC
+	# Get the explained variance ratio for each PC
 	explained_variance = pca.explained_variance_ratio_.sum()
 	print(f"Total explained variance by {actual_n_components} PCs: {explained_variance:.4f}")
 	explained_variance_ratio = pca.explained_variance_ratio_
@@ -454,8 +454,6 @@ def plot_PR(y_true_np, y_probs, target_names, title, out_path):
 	print(f"successfully created and saved PR curve at:\n{out_path}")
 
 def plot_multi_label_PR(y_true_np, y_probs, target_names, title, out_path):
-
-    from sklearn.metrics import precision_recall_curve, average_precision_score
 
 	# Build combined 4-class probabilities (mirrors plot_multi_label_ROC)
 	prob_ge = y_probs[target_names.index("sig_ge")][:, 1]
