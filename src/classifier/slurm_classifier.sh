@@ -39,7 +39,7 @@ cd "${PROJECT_DIR}"
 # Define the arrays for each parameter
 CLASSIFIERS=("xgboost")
 PCAS=("skip" "auto")
-WINDOWS=("20, 100")
+WINDOWS=("20" "100")
 EMBEDDINGS=("alt")
 TARGETS=("standard" "single")
 WEIGHTINGS=("weighted" "none")
