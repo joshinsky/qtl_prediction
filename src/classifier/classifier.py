@@ -364,7 +364,7 @@ def plot_CM(y_true_np, y_probs, target_names, title, out_path, cutoff=0.5):
 		# plot confusion matrix
 		disp = ConfusionMatrixDisplay(confusion_matrix=cm)
 		disp.plot(cmap=plt.cm.Blues)
-		plt.title(f"CM ({target}) - {title} (Cutoff: {cutoff})")
+		plt.title(f"CM ({target}) - {title} (Cutoff: {best_cutoff})")
 		
 		# save figure
 		target_out_path = out_path.replace(".png", f"_{target.replace(' ', '_')}.png")
@@ -410,7 +410,7 @@ def plot_multi_label_CM(y_true_np, y_probs, title, out_path, cutoff=0.5):
 	
 	plt.figure(figsize=(8,6))
 	disp.plot(cmap=plt.cm.Purples, values_format='d')
-	plt.title(f"Combined 4x4 CM - {title} (Cutoff: {cutoff})")
+	plt.title(f"Combined 4x4 CM - {title} (Cutoff: {best_cutoff})")
 	plt.xticks(rotation=45)
 	
 	target_out_path = out_path.replace(".png", "_Combined_4x4.png")
