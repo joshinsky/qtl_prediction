@@ -453,6 +453,64 @@ def plot_PR(y_true_np, y_probs, target_names, title, out_path):
 	plt.close()
 	print(f"successfully created and saved PR curve at:\n{out_path}")
 
+def plot_multi_label_PR(y_true_np, y_probs, target_names, title, out_path):
+
+    from sklearn.metrics import precision_recall_curve, average_precision_score
+
+	# Build combined 4-class probabilities (mirrors plot_multi_label_ROC)
+	prob_ge = y_probs[target_names.index("sig_ge")][:, 1]
+	prob_iu = y_probs[target_names.index("sig_iu")][:, 1]
+
+	class_probs = {
+		"Neither":  (1 - prob_ge) * (1 - prob_iu),
+		"Only GE":  prob_ge       * (1 - prob_iu),
+		"Only IU":  (1 - prob_ge) * prob_iu,
+		"Both":     prob_ge       * prob_iu,
+	}
+
+	ge_true = y_true_np[:, target_names.index("sig_ge")]
+	iu_true = y_true_np[:, target_names.index("sig_iu")]
+
+	class_true = {
+		"Neither":  ((ge_true == 0) & (iu_true == 0)).astype(int),
+		"Only GE":  ((ge_true == 1) & (iu_true == 0)).astype(int),
+		"Only IU":  ((ge_true == 0) & (iu_true == 1)).astype(int),
+		"Both":     ((ge_true == 1) & (iu_true == 1)).astype(int),
+	}
+
+	colors = {"Neither": "grey", "Only GE": "blue", "Only IU": "green", "Both": "purple"}
+
+	fig, ax = plt.subplots(figsize=(8, 6))
+	ap_scores = {}
+
+	for cls_name, y_score in class_probs.items():
+		y_true_cls = class_true[cls_name]
+		baseline   = y_true_cls.mean()
+		precision, recall, _ = precision_recall_curve(y_true_cls, y_score)
+		ap = average_precision_score(y_true_cls, y_score)
+		ap_scores[cls_name] = ap
+
+		ax.plot(recall, precision, color=colors[cls_name], lw=2,
+			label=f"{cls_name} (AP = {ap:.3f})")
+		ax.axhline(baseline, color=colors[cls_name], lw=1, linestyle="--", alpha=0.5,
+			label=f"{cls_name} Baseline ({baseline:.3f})")
+
+	macro_ap = np.mean(list(ap_scores.values()))
+	ax.axhline(macro_ap, color="black", lw=1.5, linestyle=":",
+		label=f"Macro-avg AP ({macro_ap:.3f})")
+
+	ax.set_xlabel("Recall", fontsize=12)
+	ax.set_ylabel("Precision", fontsize=12)
+	ax.set_title(title, fontsize=13)
+	ax.set_xlim([0.0, 1.0])
+	ax.set_ylim([0.0, 1.05])
+	ax.legend(loc="upper right", fontsize=9)
+	ax.grid(True, alpha=0.3)
+	plt.tight_layout()
+	plt.savefig(out_path, dpi=150)
+	plt.close()
+
+
 
 def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val_df, model, args, target_names):
 	print(f'get predicted probabilities...')
@@ -521,6 +579,8 @@ def evaluate_results(X_train_pca, X_val_pca, y_train_np, y_val_np, train_df, val
 			plot_multi_label_ROC(y_train_subset, train_probs_subset, f'Train ({title_suffix})', base_out_train)
 			plot_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "_PR.png"))
 			plot_PR(y_val_subset, val_probs_subset, target_names, f'Validation ({title_suffix})', base_out_val.replace(".png", "_PR.png"))
+			plot_multi_label_PR(y_train_subset, train_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "4x4_PR.png"))
+			plot_multi_label_PR(y_val_subset, val_probs_subset, target_names, f'Train ({title_suffix})', base_out_train.replace(".png", "4x4_PR.png"))
 
 ##################
 ## Main Program ##
