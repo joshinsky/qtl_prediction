@@ -12,7 +12,7 @@
 #SBATCH --time=24:00:00
 
 # Job array 
-#SBATCH --array=0-23%8
+#SBATCH --array=0-5
 
 # Output files:
 #SBATCH --output=/home/projects2/kvs_students/2026/jl_qtl_prediction/repo/qtl_prediction/logs/classifier/class-%A_%a.out
@@ -38,11 +38,11 @@ cd "${PROJECT_DIR}"
 
 # Define the arrays for each parameter
 CLASSIFIERS=("xgboost")
-PCAS=("skip" "auto")
+PCAS=("auto")
 WINDOWS=("20" "100" "1000")
-EMBEDDINGS=("alt")
+EMBEDDINGS=("delta")
 TARGETS=("standard" "single")
-WEIGHTINGS=("weighted" "none")
+WEIGHTINGS=("weighted")
 
 # -------------------------------------------------------------------------------------- #
 # Map Task ID to Parameters using modulo arithmetic
@@ -53,7 +53,7 @@ IDX=$SLURM_ARRAY_TASK_ID
 
 # Extract parameter based on modulus and division
 
-w_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
+w_idx=$(( IDX % 1 )); IDX=$(( IDX / 1 ))
 W="${WEIGHTINGS[$w_idx]}"
 
 t_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
@@ -65,7 +65,7 @@ EMB="${EMBEDDINGS[$emb_idx]}"
 win_idx=$(( IDX % 3 )); IDX=$(( IDX / 3 ))
 WIN="${WINDOWS[$win_idx]}"
 
-pca_idx=$(( IDX % 2 )); IDX=$(( IDX / 2 ))
+pca_idx=$(( IDX % 1 )); IDX=$(( IDX / 1 ))
 PCA="${PCAS[$pca_idx]}"
 
 # Define output file name/folder name
